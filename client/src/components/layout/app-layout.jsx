@@ -5,6 +5,7 @@ import Header from "./header";
 import ChatList from "../specific/chat-list";
 import { samepleChats } from "../../constants/sameple-data";
 import { useParams } from "react-router-dom";
+import Profile from "../specific/profile";
 
 /* eslint-disable react/display-name */
 const AppLayout = () => (WrappedComponent) => {
@@ -42,7 +43,7 @@ const AppLayout = () => (WrappedComponent) => {
               bgcolor: "rgba(0,0,0,0.85)",
             }}
           >
-            Third
+            <Profile />
           </Grid>
         </Grid>
       </>
