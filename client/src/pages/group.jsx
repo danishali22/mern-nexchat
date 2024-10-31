@@ -27,9 +27,10 @@ import AvatarCard from "../components/shared/avatar-card";
 import { Link } from "../components/styles/StyledComponent";
 import { bgGradient, matBlack } from "../constants/color";
 
-import { samepleChats } from "../constants/sample-data";
+import { samepleChats, sampleUsers } from "../constants/sample-data";
 import ConfirmDeleteDialog from "../components/dialog/confirm-delete-dialog";
 import AddMemberDialog from "../components/dialog/add-member-dialog";
+import UserItem from "../components/shared/user-item";
 
 const Groups = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -76,9 +77,15 @@ const Groups = () => {
     console.log("Add Member");
   }
 
+  const removeMemberHandler = (id) => {
+    console.log("Remove Member", id)
+  }
+
   useEffect(() => {
-    setGroupName(`Group Name ${chatId}`);
+    if(chatId){
+      setGroupName(`Group Name ${chatId}`);
     setGroupNameUpdatedValue(`Group Name ${chatId}`);
+    }
 
     return () => {
       setGroupName("");
@@ -140,8 +147,7 @@ const Groups = () => {
             onChange={(e) => setGroupNameUpdatedValue(e.target.value)}
           />
           <IconButton onClick={updateGroupName}>
-            {" "}
-            <DoneIcon />{" "}
+            <DoneIcon />
           </IconButton>
         </>
       ) : (
@@ -241,7 +247,22 @@ const Groups = () => {
               height={"50vh"}
               overflow={"auto"}
             >
-              {/* Members */}
+              {
+                sampleUsers.map((i) => (
+                  <UserItem
+                    user={i}
+                    key={i._id}
+                    isAdded
+                    styling={{
+                      boxShadow: "0 0 0.5rem  rgba(0,0,0,0.2)",
+                      padding: "1rem 2rem",
+                      borderRadius: "1rem",
+                    }}
+                    handler={removeMemberHandler}
+                  />
+                ))
+              }
+            
             </Stack>
 
             {ButtonGroup}

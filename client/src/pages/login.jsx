@@ -14,6 +14,7 @@ import { VisuallyHiddenInput } from "../components/styles/StyledComponent";
 import { useFileHandler, useInputValidation } from "6pp";
 // import { useStrongPassword } from "6pp";
 import { usernameValidator } from "../utils/validator";
+import { bgGradient } from "../constants/color";
 
 const Login = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -29,7 +30,7 @@ const Login = () => {
   return (
     <div
       style={{
-        backgroundImage: "linear-gradient(rgb(255,225,209), rgb(249,159,159))",
+        backgroundImage: bgGradient,
       }}
     >
       <Container
