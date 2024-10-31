@@ -26,7 +26,7 @@ const MessageComponent = ({ message, user }) => {
         </Typography>
       )}
 
-      {content && <Typography>{content}</Typography>}y
+      {content && <Typography>{content}</Typography>}
 
       {attachments.length > 0 && 
         attachments.map((attachment, index) => {
