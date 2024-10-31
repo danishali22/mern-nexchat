@@ -21,15 +21,15 @@ import {
   Typography,
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
-import { memo, Suspense, useEffect, useState } from "react";
+import { lazy, memo, Suspense, useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import AvatarCard from "../components/shared/avatar-card";
 import { Link } from "../components/styles/StyledComponent";
 import { bgGradient, matBlack } from "../constants/color";
 
 import { samepleChats, sampleUsers } from "../constants/sample-data";
-import ConfirmDeleteDialog from "../components/dialog/confirm-delete-dialog";
-import AddMemberDialog from "../components/dialog/add-member-dialog";
+const AddMemberDialog = lazy(()=>import("../components/dialog/add-member-dialog"))
+const ConfirmDeleteDialog = lazy(()=>import("../components/dialog/confirm-delete-dialog"))
 import UserItem from "../components/shared/user-item";
 
 const Groups = () => {
