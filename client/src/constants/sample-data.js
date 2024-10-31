@@ -49,11 +49,11 @@ export const sampleNotifications = [
 export const sampleMessage = [
   {
     attachments: [],
-    content: "L*uda ka Message hai",
+    content: "Subscribe kro bhola record ko",
     _id: "sfnsdjkfsdnfkjsbnd",
     sender: {
       _id: "user._id",
-      name: "Chaman ",
+      name: "Bhola",
     },
     chat: "chatId",
     createdAt: "2024-02-12T10:41:30.630Z",
@@ -66,11 +66,11 @@ export const sampleMessage = [
         url: "https://www.w3schools.com/howto/img_avatar.png",
       },
     ],
-    content: "",
+    content: "ok krta ho yr",
     _id: "sfnsdjkfsdnfkdddjsbnd",
     sender: {
       _id: "sdfsdfsdf",
-      name: "Chaman  2",
+      name: "Danish",
     },
     chat: "chatId",
     createdAt: "2024-02-12T10:41:30.630Z",
