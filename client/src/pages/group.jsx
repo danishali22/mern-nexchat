@@ -10,7 +10,9 @@ import {
   Menu as MenuIcon,
 } from "@mui/icons-material";
 import {
+  Backdrop,
   Box,
+  Button,
   Drawer,
   IconButton,
   Stack,
@@ -19,17 +21,21 @@ import {
   Typography,
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
-import { memo, useEffect, useState } from "react";
+import { memo, Suspense, useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import AvatarCard from "../components/shared/avatar-card";
 import { Link } from "../components/styles/StyledComponent";
 import { bgGradient, matBlack } from "../constants/color";
 
 import { samepleChats } from "../constants/sample-data";
+import ConfirmDeleteDialog from "../components/dialog/confirm-delete-dialog";
+import AddMemberDialog from "../components/dialog/add-member-dialog";
 
 const Groups = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
+  const [isAddMember, setIsAddMember] = useState(false);
+  const [confirmDeleteDialog, setConfirmDeleteDialog] = useState(false);
   const [groupName, setGroupName] = useState("");
   const [groupNameUpdatedValue, setGroupNameUpdatedValue] = useState("");
 
@@ -50,6 +56,25 @@ const Groups = () => {
   };
 
   const handleMobileClose = () => setIsMobileMenuOpen(false);
+
+  const openConfirmDeleteHandler = () => {
+    setConfirmDeleteDialog(true);
+    console.log("Delete Group");
+  }
+
+  const closeConfirmDeleteHandler = () => {
+    setConfirmDeleteDialog(false);
+  }
+
+  const deleteHandler = () => {
+    console.log("Delete Handler");
+    closeConfirmDeleteHandler();
+  }
+
+  const openAddMemberHandler = () => {
+    setIsAddMember(true);
+    console.log("Add Member");
+  }
 
   useEffect(() => {
     setGroupName(`Group Name ${chatId}`);
@@ -130,7 +155,37 @@ const Groups = () => {
     </Stack>
   );
 
-  const ButtonGroup = <>ok</>
+  const ButtonGroup = (
+    <Stack
+      direction={{
+        xs: "column-reverse",
+        sm: "row",
+      }}
+      spacing={"1rem"}
+      p={{
+        xs: "0",
+        sm: "1rem",
+        md: "1rem 4rem",
+      }}
+    >
+      <Button
+        size="large"
+        color="error"
+        startIcon={<DeleteIcon />}
+        onClick={openConfirmDeleteHandler}
+      >
+        Delete Group
+      </Button>
+      <Button
+        size="large"
+        variant="contained"
+        startIcon={<AddIcon />}
+        onClick={openAddMemberHandler}
+      >
+        Add Member
+      </Button>
+    </Stack>
+  );
 
   return (
     <Grid container height={"100vh"}>
@@ -193,6 +248,22 @@ const Groups = () => {
           </>
         )}
       </Grid>
+
+      {isAddMember && (
+        <Suspense fallback={<Backdrop open />}>
+          <AddMemberDialog chatId={chatId} />
+        </Suspense>
+      )}
+
+      {confirmDeleteDialog && (
+        <Suspense fallback={<Backdrop open />}>
+          <ConfirmDeleteDialog
+            open={confirmDeleteDialog}
+            handleClose={closeConfirmDeleteHandler}
+            deleteHandler={deleteHandler}
+          />
+        </Suspense>
+      )}
 
       <Drawer
         sx={{
