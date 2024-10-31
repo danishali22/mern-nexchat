@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import UserItem from "../shared/user-item";
 import { useState } from "react";
-import { sampleUsers } from "../../constants/sameple-data";
+import { sampleUsers } from "../../constants/sample-data";
 
 const Search = () => {
   const search = useInputValidation("");

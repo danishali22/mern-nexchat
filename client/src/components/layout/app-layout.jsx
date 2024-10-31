@@ -3,7 +3,7 @@ import Grid from "@mui/material/Grid2";
 import Title from "../shared/title";
 import Header from "./header";
 import ChatList from "../specific/chat-list";
-import { samepleChats } from "../../constants/sameple-data";
+import { samepleChats } from "../../constants/sample-data";
 import { useParams } from "react-router-dom";
 import Profile from "../specific/profile";
 
