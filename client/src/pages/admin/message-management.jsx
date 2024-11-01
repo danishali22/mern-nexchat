@@ -3,7 +3,7 @@ import { Avatar, Box, Stack } from "@mui/material";
 import moment from "moment";
 import { useEffect, useState } from "react";
 import AdminLayout from "../../components/layout/admin-layout";
-import RenderAttachment from "../../components/shared/RenderAttachment";
+import RenderAttachment from "../../components/shared/render-attachment";
 import Table from "../../components/shared/table";
 import { fileFormat, transformImage } from "../../lib/features";
 import { dashboardData } from "../../constants/sample-data";
