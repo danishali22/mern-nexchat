@@ -34,16 +34,16 @@ const login = TryCatch(async (req, res, next) => {
     sendToken(res, user, 200, `Welcome back ${user.name}`);
 })
 
-const getMyProfile = async (req, res) => {
+const getMyProfile = TryCatch(async (req, res) => {
     const user = await User.findById(req.user);
 
     return res.status(200).json({
         success: true,
         user,
     });
-}
+})
 
-const logout = async (req, res) => {
+const logout = TryCatch(async (req, res) => {
 
     return res.status(200)
     .cookie("nexchat-token", "", {...cookieOptions, maxAge: 0})
@@ -51,6 +51,13 @@ const logout = async (req, res) => {
         success: true,
         message: "Logout Successfully!",
     });
-}
+})
 
-export {newUser, login, getMyProfile, logout}
+const searchUser = TryCatch(async (req,res,next) => {
+  return res.status(200).json({
+        success: true,
+        message: "Logout Successfully!",
+    });
+})
+
+export {newUser, login, getMyProfile, logout, searchUser}
