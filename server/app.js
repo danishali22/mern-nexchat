@@ -6,7 +6,6 @@ import cookieParser from "cookie-parser";
 
 import userRoutes from "./routes/user.js";
 import chatRoutes from "./routes/chat.js";
-import { createUser } from "./seeders/user.js";
 
 dotenv.config({
     path: "./.env"
@@ -15,7 +14,7 @@ const mongoUri = process.env.MONGO_URI
 const port = process.env.PORT || 3000;
 connectDB(mongoUri);
 
-// createUser(10);
+// createUser(10);  use to create fake users
 
 const app = express();
 

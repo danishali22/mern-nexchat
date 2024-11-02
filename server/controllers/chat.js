@@ -3,6 +3,7 @@ import { ErrorHandler } from "../utils/utility.js";
 import { Chat } from "../models/chat.js";
 import { emitEvent } from "../utils/features.js";
 import {ALERT, REFETCH_CHATS} from "../constants/event.js"
+import { getOtherMember } from "../lib/helper.js";
 
 const newGroupChat = TryCatch(async (req, res, next) => {
   const { name, members } = req.body;
@@ -17,7 +18,7 @@ const newGroupChat = TryCatch(async (req, res, next) => {
   await Chat.create({
     name,
     groupChat: true,
-    cretor: req.user,
+    creator: req.user,
     members: allMembers,
   });
 
@@ -30,4 +31,53 @@ const newGroupChat = TryCatch(async (req, res, next) => {
   });
 });
 
-export { newGroupChat };
+const getMyChats = TryCatch(async (req, res, next) => {
+
+    const chats = await Chat.find({members: req.user}).populate("members", "name avatar");
+
+    const transformedChats = chats.map(({_id, groupChat, name, members}) => {
+        const otherMember = getOtherMember(members, req.user);
+        return {   
+            _id,
+            groupChat,
+            name: groupChat ? name : otherMember.name,
+            avatar: groupChat 
+            ? members.slice(0,3).map(({avatar}) => avatar.url)
+            : [otherMember.avatar.url],
+            members: members.reduce((prev, curr) => {
+                if(curr._id.toString() !== req.user.toString()){
+                    prev.push(curr._id);
+                }
+                return prev;
+            }, []),
+        }
+    });
+
+  return res.status(200).json({
+    success: true,
+    chats: transformedChats,
+  });
+});
+
+const getMyGroups = TryCatch(async (req, res, next) => {
+
+    const chats = await Chat.find({
+        members: req.user,
+        groupChat: true,
+        creator: req.user,
+    }).populate("members", "name avatar");
+
+    const groups = chats.map(({_id, groupChat, name, members})=> ({
+        _id,
+        groupChat,
+        name,
+        avatar: members.slice(0,3).map(({avatar})=> avatar.url),
+    }));
+
+  return res.status(200).json({
+    success: true,
+    groups,
+  });
+});
+
+export { newGroupChat, getMyChats, getMyGroups };
