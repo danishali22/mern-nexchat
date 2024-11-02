@@ -1,6 +1,6 @@
 import { compare } from "bcrypt";
 import { User } from "../models/user.js";
-import { sendToken } from "../utils/features.js";
+import { cookieOptions, sendToken } from "../utils/features.js";
 import { TryCatch } from "../middlewares/error.js";
 import { ErrorHandler } from "../utils/utility.js";
 
@@ -43,4 +43,14 @@ const getMyProfile = async (req, res) => {
     });
 }
 
-export {newUser, login, getMyProfile}
+const logout = async (req, res) => {
+
+    return res.status(200)
+    .cookie("nexchat-token", "", {...cookieOptions, maxAge: 0})
+    .json({
+        success: true,
+        message: "Logout Successfully!",
+    });
+}
+
+export {newUser, login, getMyProfile, logout}
