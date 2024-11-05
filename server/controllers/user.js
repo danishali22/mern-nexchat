@@ -5,7 +5,7 @@ import { Request } from "../models/request.js";
 import { cookieOptions, emitEvent, sendToken } from "../utils/features.js";
 import { TryCatch } from "../middlewares/error.js";
 import { ErrorHandler } from "../utils/utility.js";
-import { NEW_REQUEST } from "../constants/event.js";
+import { NEW_REQUEST, REFETCH_CHATS } from "../constants/event.js";
 
 const newUser = TryCatch(async (req, res) => {
   const { name, username, password, bio } = req.body;
@@ -90,12 +90,12 @@ const sendFirendRequest = TryCatch(async (req, res, next) => {
 
   const request = await Request.findOne({
     $or: [
-      {sender: req.user, receiver: userId},
-      {sender: userId, receiver: req.user},
-    ]
+      { sender: req.user, receiver: userId },
+      { sender: userId, receiver: req.user },
+    ],
   });
 
-  if(request) return next(new ErrorHandler("Request already sent", 400));
+  if (request) return next(new ErrorHandler("Request already sent", 400));
 
   await Request.create({
     sender: req.user,
@@ -110,4 +110,50 @@ const sendFirendRequest = TryCatch(async (req, res, next) => {
   });
 });
 
-export { newUser, login, getMyProfile, logout, searchUser, sendFirendRequest };
+const acceptFirendRequest = TryCatch(async (req, res, next) => {
+  const { requestId, accept } = req.body;
+
+  const request = await Request.findById(requestId).populate("sender name").populate("receiver name");
+
+  if(!request) return next(new ErrorHandler("Request Not Found", 404));
+
+  if(request.receiver.toString() !== req.user.toString())
+    return next(new ErrorHandler("You are not authorized to accept this request", 401));
+
+  if(!accept) {
+    await request.deleteOne();
+    return res.status(200).json({
+      success: true,
+      message: "Friend Request Rejected",
+    });
+  }
+
+  const members = [request.sender._id, request.receiver._id];
+
+  await Promise.all([
+    Chat.create({
+      members,
+      name: `${request.sender.name}-${request.receiver.name}`
+    }),
+    request.deleteOne(),
+  ]);
+
+  emitEvent(req, REFETCH_CHATS, members);
+
+  return res.status(200).json({
+    success: true,
+    message: "Friend Request Accepted",
+    senderId: request.sender._id,
+  });
+});
+
+export {
+  newUser,
+  login,
+  getMyProfile,
+  logout,
+  searchUser,
+  sendFirendRequest,
+  acceptRequestValidator,
+  acceptFirendRequest,
+};

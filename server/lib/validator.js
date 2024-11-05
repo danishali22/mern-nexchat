@@ -56,19 +56,25 @@ const sendAttachmentsValidator = () => [
     .withMessage("Attachments must be between 1-5"),
 ];
 
-const chatIdValidator = () => [
-    param("id", "Please Enter Chat ID").notEmpty(),
-  ];
+const chatIdValidator = () => [param("id", "Please Enter Chat ID").notEmpty()];
 
 const renameGroupValidator = () => [
-    param("id", "Please Enter Chat ID").notEmpty(),
-    body("name", "Please Enter New Group Name").notEmpty(),
-  ];
+  param("id", "Please Enter Chat ID").notEmpty(),
+  body("name", "Please Enter New Group Name").notEmpty(),
+];
 
 const sendRequestValidator = () => [
-    body("userId", "Please Enter User Id").notEmpty(),
-  ];
+  body("userId", "Please Enter User Id").notEmpty(),
+];
 
+const acceptRequestValidator = () => [
+  body("requestId", "Please Enter Request Id").notEmpty(),
+  body("accept")
+    .notEmpty()
+    .withMessage("Please Add Accept")
+    .isBoolean()
+    .withMessage("Accept must be a Boolean"),
+];
 
 export {
   validateHandler,

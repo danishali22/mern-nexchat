@@ -1,5 +1,5 @@
 import express from "express";
-import { getMyProfile, login, logout, newUser, searchUser, sendFirendRequest } from "../controllers/user.js";
+import { acceptFirendRequest, acceptRequestValidator, getMyProfile, login, logout, newUser, searchUser, sendFirendRequest } from "../controllers/user.js";
 import { singleAvatar } from "../middlewares/multer.js";
 import { isAuthenticated } from "../middlewares/auth.js";
 import { loginValidator, resgisterValidator, sendRequestValidator, validateHandler } from "../lib/validator.js";
@@ -14,5 +14,6 @@ app.get("/me", getMyProfile);
 app.get("/logout", logout);
 app.get("/search", searchUser);
 app.get("/send-request", sendRequestValidator(), validateHandler, sendFirendRequest);
+app.get("/accept-request", acceptRequestValidator(), validateHandler, acceptFirendRequest);
 
 export default app;
