@@ -7,7 +7,7 @@ import { TryCatch } from "../middlewares/error.js";
 import { ErrorHandler } from "../utils/utility.js";
 import { NEW_REQUEST, REFETCH_CHATS } from "../constants/event.js";
 
-const newUser = TryCatch(async (req, res) => {
+const newUser = TryCatch(async (req, res, next) => {
   const { name, username, password, bio } = req.body;
 
   const avatar = {
@@ -38,8 +38,9 @@ const login = TryCatch(async (req, res, next) => {
   sendToken(res, user, 200, `Welcome back ${user.name}`);
 });
 
-const getMyProfile = TryCatch(async (req, res) => {
+const getMyProfile = TryCatch(async (req, res, next) => {
   const user = await User.findById(req.user);
+  if(!user) return next(new ErrorHandler("User not found", 404))
 
   return res.status(200).json({
     success: true,
@@ -47,7 +48,7 @@ const getMyProfile = TryCatch(async (req, res) => {
   });
 });
 
-const logout = TryCatch(async (req, res) => {
+const logout = TryCatch(async (req, res, next) => {
   return res
     .status(200)
     .cookie("nexchat-token", "", { ...cookieOptions, maxAge: 0 })
@@ -113,11 +114,13 @@ const sendFirendRequest = TryCatch(async (req, res, next) => {
 const acceptFirendRequest = TryCatch(async (req, res, next) => {
   const { requestId, accept } = req.body;
 
-  const request = await Request.findById(requestId).populate("sender name").populate("receiver name");
+  const request = await Request.findById(requestId)
+  .populate({ path: "sender", select: "name" })
+  .populate({ path: "receiver", select: "name" });
 
   if(!request) return next(new ErrorHandler("Request Not Found", 404));
 
-  if(request.receiver.toString() !== req.user.toString())
+  if(request.receiver._id.toString() !== req.user.toString())
     return next(new ErrorHandler("You are not authorized to accept this request", 401));
 
   if(!accept) {
