@@ -147,13 +147,32 @@ const acceptFirendRequest = TryCatch(async (req, res, next) => {
   });
 });
 
+const getMyNotifications = TryCatch(async (req, res, next) => {
+
+  const request = await Request.find({receiver: req.user}).populate("sender", "name avatar");
+
+  const allRequests = request.map(({_id, sender})=> ({
+    _id,
+    sender: {
+    _id: sender._id,
+    name: sender.name,
+    avatar: sender.avatar.url,
+  }
+  }));
+
+  return res.status(200).json({
+    success: true,
+    allRequests
+  });
+});
+
 export {
   newUser,
   login,
-  getMyProfile,
+  getMyProfile, 
   logout,
   searchUser,
   sendFirendRequest,
-  acceptRequestValidator,
   acceptFirendRequest,
+  getMyNotifications
 };

@@ -87,4 +87,5 @@ export {
   chatIdValidator,
   renameGroupValidator,
   sendRequestValidator,
+  acceptRequestValidator,
 };
