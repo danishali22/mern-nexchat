@@ -16,6 +16,7 @@ connectDB(mongoUri);
 
 // createUser(10);  use to create fake users
 
+
 const app = express();
 
 app.use(express.json());

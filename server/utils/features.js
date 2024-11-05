@@ -28,4 +28,8 @@ const emitEvent = (req, event, users, data) => {
     console.log("Emitting Event");
 }
 
-export {connectDB, sendToken, cookieOptions, emitEvent}
+const deleteFilesFromCloudinary = (public_ids)=>{
+    console.log("Delete files from cloudinary");
+}
+
+export {connectDB, sendToken, cookieOptions, emitEvent, deleteFilesFromCloudinary}
