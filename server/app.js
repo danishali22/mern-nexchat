@@ -13,6 +13,7 @@ dotenv.config({
 });
 const mongoUri = process.env.MONGO_URI;
 const port = process.env.PORT || 3000;
+const adminSecretKey = process.env.ADMIN_SECRET_KEY || "admin"
 connectDB(mongoUri);
 // createUser(10);  use to create fake users
 
@@ -34,3 +35,5 @@ app.use(errorMiddleware);
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
+
+export {adminSecretKey};

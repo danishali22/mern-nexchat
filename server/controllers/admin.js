@@ -2,6 +2,35 @@ import { TryCatch } from "../middlewares/error.js";
 import { Chat } from "../models/chat.js";
 import { Message } from "../models/message.js";
 import { User } from "../models/user.js";
+import { adminSecretKey } from "../app.js";
+import { ErrorHandler } from "../utils/utility.js";
+import { cookieOptions } from "../utils/features.js";
+import jwt from "jsonwebtoken";
+
+const adminLogin = TryCatch(async(req,res,next)=>{
+    const {secretKey} = req.body;
+    const isMatched = secretKey === adminSecretKey;
+
+    if(!isMatched) return next(new ErrorHandler("Invalid Admin Key", 401));
+
+    const token = jwt.sign(secretKey, process.env.JWT_SECRET);
+    return res
+        .status(200)
+        .cookie("nexchat-admin-token", token, {
+            ...cookieOptions,
+            maxAge: 1000 * 60 * 60 // 1 hour
+        })
+        .json({
+            success: true,
+            message: "Authenticated Successfully, Welcome Admin"
+        });
+    
+});
+
+const adminLogout = TryCatch(async(req,res,next)=> {
+
+
+})
 
 const allUsers = TryCatch(async(req,res,next)=>{
     const users = await User.find({});
@@ -143,4 +172,6 @@ export {
     allChats,
     allMessages,
     getDashboardStats,
+    adminLogin,
+    adminLogout,
 }
