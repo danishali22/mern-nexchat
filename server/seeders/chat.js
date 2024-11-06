@@ -114,6 +114,10 @@ const createMessagesInAChat = async (chatId, numMessages) => {
           chat: chatId,
           sender: randomUser,
           content: faker.lorem.sentence(),
+          attachments: {
+            public_id: "random",
+            url: "url",
+          },
         })
       );
     }
