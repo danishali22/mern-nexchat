@@ -13,6 +13,7 @@ import adminRoutes from "./routes/admin.js";
 import { NEW_MESSAGE, NEW_MESSAGE_ALERT } from "./constants/event.js";
 import { getSockets } from "./lib/helper.js";
 import { Message } from "./models/message.js";
+import cors from "cors";
 
 dotenv.config({
   path: "./.env",
@@ -32,10 +33,17 @@ const io = new Server(server, {});
 
 app.use(express.json());
 app.use(cookieParser());
+app.use(cors({
+  origin: [
+    "http://localhost:5173",
+    "http://localhost:4173",
+    process.env.CLIENT_URL,
+  ]
+}));
 
-app.use("/user", userRoutes);
-app.use("/chat", chatRoutes);
-app.use("/admin", adminRoutes);
+app.use("/api/v1/user", userRoutes);
+app.use("/api/v1/chat", chatRoutes);
+app.use("/api/v1/admin", adminRoutes);
 
 app.get("/", (req, res) => {
   res.send("Home Route");

@@ -10,7 +10,7 @@ import {
   Typography,
 } from "@mui/material";
 import { memo } from "react";
-import { sampleNotifications } from "../../constants/sample-data;
+import { sampleNotifications } from "../../constants/sample-data.js";
 
 const Notifications = () => {
 
