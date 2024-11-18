@@ -15,10 +15,69 @@ import { useFileHandler, useInputValidation } from "6pp";
 // import { useStrongPassword } from "6pp";
 import { usernameValidator } from "../utils/validator";
 import { bgGradient } from "../constants/color";
+import axios from "axios";
+import {server} from "./constants/config.js";
+import { useDispatch } from "react-redux";
+import { userExists } from "../redux/reducers/auth";
+import toast from "react-hot-toast";
 
 const Login = () => {
   const [isLogin, setIsLogin] = useState(true);
   const toggleLogin = () => setIsLogin((prev) => !prev);
+  const dispatch = useDispatch();
+
+  const config = {
+    withCredentials: true,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  };
+
+  const handleLogin = async () => {
+    try {
+      const {data} = axios.post(`${server}/api/v1/user/login`, 
+      {
+        username: username.value,
+        password: password.value,
+      },
+      config,
+    );
+    dispatch(userExists(true));
+    toast.success(data.message);
+    console.log(data);
+    } catch (error) {
+      console.log(error);
+      toast.error(error.response.data.message || "Something went wrong");
+    }
+  }
+
+  const handleRegister = (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append("avatar", avatar.file);
+    formData.append("name", name.value);
+    formData.append("bio", bio.value);
+    formData.append("username", username.value);
+    formData.append("password", password.value);
+
+    const config = {
+      withCredentials: true,
+      "headers": {
+        "Content-Type": "multipart/form-data",
+      }
+    }
+
+    try {
+      const {data} = axios.post(`${server}/api/v1/user/new`, 
+        formData,
+        config
+      );
+      dispatch(userExists);
+      toast.success(data.message);
+    } catch (error) {
+      toast.error(error.response.data.message || "Something went wrong");
+    }
+  }
 
   const name = useInputValidation("");
   const bio = useInputValidation("");
@@ -55,7 +114,7 @@ const Login = () => {
           {isLogin ? (
             <>
               <Typography variant="h4">Login</Typography>
-              <form style={{ width: "100%", marginTop: "1rem" }}>
+              <form onSubmit={handleLogin} style={{ width: "100%", marginTop: "1rem" }}>
                 <TextField
                   required
                   fullWidth
@@ -109,7 +168,7 @@ const Login = () => {
           ) : (
             <>
               <Typography variant="h4">Register</Typography>
-              <form style={{ width: "100%", marginTop: "1rem" }}>
+              <form onSubmit={handleRegister} style={{ width: "100%", marginTop: "1rem" }}>
                 <Stack width={"10rem"} position={"relative"} margin={"auto"}>
                   <Avatar
                     sx={{

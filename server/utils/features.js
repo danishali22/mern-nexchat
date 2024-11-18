@@ -1,5 +1,8 @@
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose"
+import { v4 as uuid } from "uuid";
+import { v2 as cloudinary } from "cloudinary";
+import { getBase64 } from "../lib/helper.js";
 
 const cookieOptions = {
     maxAge: 15 * 24 * 60 * 60 * 1000,
@@ -28,8 +31,43 @@ const emitEvent = (req, event, users, data) => {
     console.log("Emitting Event");
 }
 
+const uploadFilesFromCloudinary = async (files = [])=>{
+    const uploadPromises = files.map((file)=>{
+        return new Promise((resolve, reject)=> {
+            cloudinary.uploader.upload(
+                getBase64(file),
+                {
+                    resource_path: "auto",
+                    public_id: uuid(),
+                },
+                (error, result) => {
+                    if(error) return reject(error);
+                    resolve(result);
+                }
+            );
+        });
+    });
+
+    try {
+        const results = await Promise.all(uploadPromises);
+        const formattedResults = results.map((result)=> ({
+            public_id: result.public_id,
+            url: result.secure_url,
+        }));
+        return formattedResults;
+    } catch (error) {
+        console.log("Error uploading files to cloudinary", error);
+    }
+}
 const deleteFilesFromCloudinary = (public_ids)=>{
     console.log("Delete files from cloudinary");
 }
 
-export {connectDB, sendToken, cookieOptions, emitEvent, deleteFilesFromCloudinary}
+export {
+  connectDB,
+  sendToken,
+  cookieOptions,
+  emitEvent,
+  uploadFilesFromCloudinary,
+  deleteFilesFromCloudinary,
+};
