@@ -7,23 +7,44 @@ import { samepleChats } from "../../constants/sample-data";
 import { useParams } from "react-router-dom";
 import Profile from "../specific/profile";
 import { useMyChatsQuery } from "../../redux/api/api";
-import { Skeleton } from "@mui/material";
+import { Drawer, Skeleton } from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
+import { setIsMobile } from "../../redux/reducers/misc";
 
 /* eslint-disable react/display-name */
 const AppLayout = () => (WrappedComponent) => {
   return (props) => {
     const params = useParams();
+    const dispatch = useDispatch();
     const chatId = params.chatId;
 
-    const {isLoading, data, isErrorc, error, refetch} = useMyChatsQuery("");
+    const { isMobile } = useSelector((state) => state.misc);
 
-    const handleDeleteChat = () => {
+    const { isLoading, data, isErrorc, error, refetch } = useMyChatsQuery("");
 
-    }
+    const handleDeleteChat = (e, _id, groupChat) => {
+      e.preventDefault();
+      console.log("Delete Chat", _id, groupChat);
+    };
+
+    const handleMobileClose = () => dispatch(setIsMobile(false))
+
     return (
       <>
         <Title />
         <Header />
+        {isLoading ? (
+          <Skeleton />
+        ) : (
+          <Drawer open={isMobile} onClose={handleMobileClose}>
+            <ChatList
+              w="70vw"
+              chats={samepleChats}
+              chatId={chatId}
+              handleDeleteChat={handleDeleteChat}
+            />
+          </Drawer>
+        )}
         <Grid container height={"calc(100vh - 4rem)"}>
           <Grid
             size={{ sm: 4, md: 3, lg: 3 }}

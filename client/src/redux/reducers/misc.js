@@ -1,24 +1,63 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  user: null,
-  isAdmin: false,
-  loader: true,
+  isNewGroup: false,
+  isAddMember: false,
+  isNotification: false,
+  isMobile: false,
+  isSearch: false,
+  isFileMenu: false,
+  isDeleteMenu: false,
+  uploadingLoader: false,
+  selectedDeleteChat: {
+    chatId: "",
+    groupChat: false,
+  },
 };
 
-const authSlice = createSlice({
-  name: "auth",
+const miscSlice = createSlice({
+  name: "misc",
   initialState,
   reducers: {
-    userExists: (state, action) => {
-      state.user = action.payload;
-      state.loader = false;
+    setIsNewGroup: (state, action) => {
+      state.isNewGroup = action.payload;
     },
-    userNotExists: (state) => {
-      (state.user = null), (state.loader = false);
+    setIsAddMember: (state, action) => {
+      state.isAddMember = action.payload;
+    },
+    setIsNotification: (state, action) => {
+      state.isNotification = action.payload;
+    },
+    setIsMobile: (state, action) => {
+      state.isMobile = action.payload;
+    },
+    setIsSearch: (state, action) => {
+      state.isSearch = action.payload;
+    },
+    setIsFileMenu: (state, action) => {
+      state.isFileMenu = action.payload;
+    },
+    setIsDeleteMenu: (state, action) => {
+      state.isDeleteMenu = action.payload;
+    },
+    setUploadingLoader: (state, action) => {
+      state.uploadingLoader = action.payload;
+    },
+    setSelectedDeleteChat: (state, action) => {
+      state.selectedDeleteChat = action.payload;
     },
   },
 });
 
-export default authSlice;
-export const { userExists, userNotExists } = authSlice.actions;
+export default miscSlice;
+export const {
+  setIsNewGroup,
+  setIsAddMember,
+  setIsNotification,
+  setIsMobile,
+  setIsSearch,
+  setIsFileMenu,
+  setIsDeleteMenu,
+  setUploadingLoader,
+  setSelectedDeleteChat,
+} = miscSlice.actions;
