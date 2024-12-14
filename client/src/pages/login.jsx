@@ -44,7 +44,7 @@ const Login = () => {
 
     try {
       const { data } = await axios.post(
-        `${server}user/login`,
+        `${server}/user/login`,
         {
           username: username.value,
           password: password.value,
@@ -52,8 +52,6 @@ const Login = () => {
         config
       );
 
-      console.log(username.value);
-      console.log(password.value);
       dispatch(userExists(data.user));
       toast.success(data.message);
     } catch (error) {

@@ -31,11 +31,15 @@ const App = () => {
 
   useEffect(() => {
     axios
-      .get(`${server}/api/v1/user/me`, { withCredentals: true })
-      .then((data) => dispatch(userExists(data.user)))
-      .catch(() => dispatch(userNotExists()));
+      .get(`${server}/user/me`, { withCredentials: true })
+      .then((response) => {
+        dispatch(userExists(response.data.user));
+      })
+      .catch((error) => {
+        dispatch(userNotExists());
+      });
+  }, [dispatch]);
 
-  }, [dispatch])
   
 
   return loader ? (
