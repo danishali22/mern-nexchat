@@ -71,9 +71,18 @@ const searchUser = TryCatch(async (req, res, next) => {
   const myChats = await Chat.find({ groupChat: false, members: req.user });
 
   // all user from my chat that I chatted with
-  const allUsersFromMyChats = myChats.flatMap((chat) => chat.members);
+  let allUsersFromMyChats = [];
+  if (myChats.length > 0) {
+    // If chats are found, extract all users from these chats
+    allUsersFromMyChats = myChats.flatMap((chat) => chat.members);
+  } else {
+    // If no chats are found, do not include the current user in the search
+    allUsersFromMyChats.push(req.user);
+  }
 
-  // all user that are not not included in my chats
+  console.log("ok", allUsersFromMyChats);
+
+  // all user that are not included in my chats
   const allUserExceptMeAndFriends = await User.find({
     _id: { $nin: allUsersFromMyChats },
     name: { $regex: name, $options: "i" },

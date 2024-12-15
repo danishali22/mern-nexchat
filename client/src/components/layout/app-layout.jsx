@@ -10,8 +10,7 @@ import { useMyChatsQuery } from "../../redux/api/api";
 import { Drawer, Skeleton } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { setIsMobile } from "../../redux/reducers/misc";
-import toast from "react-hot-toast";
-import { useEffect } from "react";
+import { useErrors } from "../../hooks/hook";
 
 /* eslint-disable react/display-name */
 const AppLayout = () => (WrappedComponent) => {
@@ -23,6 +22,8 @@ const AppLayout = () => (WrappedComponent) => {
     const { isMobile } = useSelector((state) => state.misc);
 
     const { isLoading, data, isError, error, refetch } = useMyChatsQuery("");
+
+    useErrors([{isError, error}]);
 
     const handleDeleteChat = (e, _id, groupChat) => {
       e.preventDefault();

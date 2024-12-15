@@ -20,11 +20,13 @@ import { server } from "./constants/config.js";
 import { useDispatch } from "react-redux";
 import { userExists } from "../redux/reducers/auth";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [isLogin, setIsLogin] = useState(true);
   const toggleLogin = () => setIsLogin((prev) => !prev);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   // const config = {
   //   withCredentials: true,
@@ -54,6 +56,7 @@ const Login = () => {
 
       dispatch(userExists(data.user));
       toast.success(data.message);
+      console.log(data);
     } catch (error) {
       toast.error(error?.response?.data?.message || "Something Went Wrong");
     }
@@ -77,12 +80,13 @@ const Login = () => {
 
     try {
       const { data } = axios.post(
-        `${server}/api/v1/user/new`,
+        `${server}/user/new`,
         formData,
         config
       );
       dispatch(userExists);
       toast.success(data.message);
+      navigate("/");
     } catch (error) {
       toast.error(error.response.data.message || "Something went wrong");
     }

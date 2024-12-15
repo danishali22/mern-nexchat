@@ -24,7 +24,7 @@ const UserItem = ({
         {...styling}
       >
         {/* <Avatar src={transformImage(avatar)} /> */}
-        <Avatar />
+        <Avatar src={avatar} />
 
         <Typography
           variant="body1"

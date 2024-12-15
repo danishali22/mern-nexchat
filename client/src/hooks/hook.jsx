@@ -1,13 +1,15 @@
 import { useEffect } from "react";
+import toast from "react-hot-toast";
 
 const useErrors = (errors = []) => {
-
-
-    useEffect(() => {
+  useEffect(() => {
+    errors.forEach(({error, isError, fallback})=>{
       if (isError) {
-        toast.error(error?.response?.data?.message || "Something went wrong");
+        if(fallback) fallback
+        else toast.error(error?.response?.data?.message || "Something went wrong");
       }
-    }, [isError, error]);
+    })
+    }, [errors]);
 }
 
 export { useErrors }; 
