@@ -80,8 +80,6 @@ const searchUser = TryCatch(async (req, res, next) => {
     allUsersFromMyChats.push(req.user);
   }
 
-  console.log("ok", allUsersFromMyChats);
-
   // all user that are not included in my chats
   const allUserExceptMeAndFriends = await User.find({
     _id: { $nin: allUsersFromMyChats },
