@@ -11,6 +11,10 @@ const schema = new Schema({
         required: true,
         unique: true
     },
+    bio: {
+        type: String,
+        required: true,
+    },
     password: {
         type: String,
         required: true,
