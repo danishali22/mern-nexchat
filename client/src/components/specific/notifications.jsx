@@ -6,24 +6,55 @@ import {
   Dialog,
   DialogTitle,
   ListItem,
+  Skeleton,
   Stack,
   Typography,
 } from "@mui/material";
 import { memo } from "react";
-import { sampleNotifications } from "../../constants/sample-data.js";
+import { useAcceptFriendRequestMutation, useGetNotificationsQuery } from "../../redux/api/api.js";
+import { useErrors } from "../../hooks/hook.jsx";
+import { useDispatch, useSelector } from "react-redux";
+import { setIsNotification } from "../../redux/reducers/misc.js";
+import toast from "react-hot-toast";
 
 const Notifications = () => {
+  const { isNotification } = useSelector((state) => state.misc);
+
+  const dispatch = useDispatch();
+
+  const {isLoading, error, isError, data} = useGetNotificationsQuery();
+  const [acceptFriendRequest] = useAcceptFriendRequestMutation();
+
+  useErrors([{error, isError}]);
 
   const friendRequestHandler = async ({ _id, accept }) => {
+    dispatch(setIsNotification(false));
+    try {
+      const res = await acceptFriendRequest({requestId: _id, accept});
+      if(res.data?.success){
+        console.log("use socket here");
+        toast.success(res.data?.success || "Friend Request Accepted");
+      }
+      else toast.error(res.data?.error || "Something went wrong");
+    } catch (error) {
+      toast.error("Something went wrong")
+    }
   };
 
+  const closeHandler = () => {
+    dispatch(setIsNotification(false));
+  }
+
   return (
-    <Dialog open>
+    <Dialog open={isNotification} onClose={closeHandler}>
       <Stack p={{ xs: "1rem", sm: "2rem" }} maxWidth={"25rem"}>
         <DialogTitle>Notifications</DialogTitle>
+        {isLoading ? (
+          <Skeleton />
+        ) : (
           <>
-            {sampleNotifications.length > 0 ? (
-              sampleNotifications.map(({ sender, _id }) => (
+            {data.allRequests.length > 0 ? (
+              data.allRequests.map(({ sender, _id }) => (
                 <NotificationItem
                   sender={sender}
                   _id={_id}
@@ -35,6 +66,7 @@ const Notifications = () => {
               <Typography textAlign={"center"}>0 notifications</Typography>
             )}
           </>
+        )}
       </Stack>
     </Dialog>
   );

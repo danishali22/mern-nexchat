@@ -18,13 +18,13 @@ import {
   Notifications as NotificationsIcon,
 } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
-import { lazy, Suspense, useState } from "react";
+import { lazy, Suspense } from "react";
 import {server} from "../../constants/config";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { userNotExists } from "../../redux/reducers/auth";
-import { setIsMobile, setIsSearch } from "../../redux/reducers/misc";
+import { setIsMobile, setIsNewGroup, setIsNotification, setIsSearch } from "../../redux/reducers/misc";
 
 const SearchDialog = lazy(()=> import("../specific/search"));
 const NotificationsDialog = lazy(()=> import("../specific/notifications"));
@@ -34,19 +34,18 @@ const Header = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const {isSearch} = useSelector((state)=>state.misc);
-
-  const [isNewGroup, setIsNewGroup] = useState(false);
-  const [isNotifications, setIsNotifications] = useState(false);
+  const { isSearch, isNotification, isNewGroup } = useSelector(
+    (state) => state.misc
+  );
 
   const handleMobile = () => dispatch(setIsMobile(true));
-  const openSearch = () => dispatch(setIsSearch(true))
-  const openNewGroup = () => {
-    setIsNewGroup((prev) => !prev);
-  };
-  const openNotifications = () => {
-    setIsNotifications((prev) => !prev);
-  };
+
+  const openSearch = () => dispatch(setIsSearch(true));
+
+  const openNewGroup = () => dispatch(setIsNewGroup(true));
+
+  const openNotifications = () => dispatch(setIsNotification(true));
+  
   const navigateToGroup = () => navigate("/group");
   const logoutHandler = async () => {
     try {
@@ -119,7 +118,7 @@ const Header = () => {
           <SearchDialog />
         </Suspense>
       )}
-      {isNotifications && (
+      {isNotification && (
         <Suspense fallback={<Backdrop open />}>
           <NotificationsDialog />
         </Suspense>

@@ -43,7 +43,7 @@ const api = createApi({
         body: data,
         credentials: "include",
       }),
-      providesTags: ["User"],
+      providesTags: ["Chat"],
     }),
   }),
 });
