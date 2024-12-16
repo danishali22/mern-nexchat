@@ -90,6 +90,9 @@ io.on("connection", (socket) => {
       createdAt: new Date().toISOString(),
     };
 
+    console.log("message real time", messageForRealTime);
+    console.log("message members", members);
+
     const messageForDB = {
       content: message,
       sender: user._id,
@@ -123,4 +126,4 @@ server.listen(port, () => {
   console.log(`Server is running on port ${port} in ${envMode} Mode`);
 });
 
-export { adminSecretKey, envMode };
+export { adminSecretKey, envMode, userSocketIds };

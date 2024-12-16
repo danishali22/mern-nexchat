@@ -1,10 +1,12 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable react-refresh/only-export-components */
 import  {
   Fragment,
-  useRef
+  useRef,
+  useState
 } from "react";
 import AppLayout from "../components/layout/app-layout"
-import { IconButton, Stack } from "@mui/material";
+import { IconButton, Skeleton, Stack } from "@mui/material";
 import { grayColor, orange } from "../constants/color";
 import {
   AttachFile as AttachFileIcon,
@@ -14,14 +16,35 @@ import { InputBox } from "../components/styles/StyledComponent";
 import { sampleMessage } from "../constants/sample-data";
 import MessageComponent from "../components/shared/message-component";
 import FileMenu from "../components/dialog/file-menu";
+import { getSocket } from "../socket";
+import { NEW_MESSAGE } from "../constants/event";
+import { useChatDetailsQuery } from "../redux/api/api";
 
-const Chat = () => {
-  const user = {
-    _id: "sdfsdfsdf",
-    name: "Dummy",
-  };
+const user = {
+  _id: "sdfsdfsdf",
+  name: "Dummy",
+};
+const Chat = ({chatId}) => {
   const containerRef = useRef(null);
-  return (
+
+  const socket = getSocket();
+  const chatDetails = useChatDetailsQuery({chatId, skip: !chatId});
+
+  const [message, setMessage] = useState("");
+  const members = chatDetails?.data?.chat?.members;
+  console.log("members", chatDetails);
+
+  const submitHandler = (e) => {
+    e.preventDefault();
+    if(!message.trim()) return;
+    socket.emit(NEW_MESSAGE, {chatId, members, message});
+    setMessage("");
+
+    console.log(message);
+  }
+
+
+  return chatDetails.isLoading ? ( <Skeleton /> ) : (
     <Fragment>
       <Stack
         ref={containerRef}
@@ -35,13 +58,13 @@ const Chat = () => {
           overflowY: "auto",
         }}
       >
-      { sampleMessage.map((i) => (
-        <MessageComponent key={i._id} message={i} user={user} />
-      )) }
-      
+        {sampleMessage.map((i) => (
+          <MessageComponent key={i._id} message={i} user={user} />
+        ))}
       </Stack>
 
       <form
+        onSubmit={submitHandler}
         style={{
           height: "10%",
         }}
@@ -65,6 +88,7 @@ const Chat = () => {
 
           <InputBox
             placeholder="Type Message Here..."
+            onChange={(e) => setMessage(e.target.value)}
           />
 
           <IconButton
@@ -86,7 +110,7 @@ const Chat = () => {
       </form>
       <FileMenu />
     </Fragment>
-  )
+  );
 }
 
 export default AppLayout()(Chat)

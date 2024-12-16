@@ -34,7 +34,7 @@ const api = createApi({
         url: "user/notifications",
         credentials: "include",
       }),
-      keepUnusedDataFor: 0
+      keepUnusedDataFor: 0,
     }),
     acceptFriendRequest: builder.mutation({
       query: (data) => ({
@@ -45,8 +45,19 @@ const api = createApi({
       }),
       providesTags: ["Chat"],
     }),
+    chatDetails: builder.query({
+      query: ({chatId, populate = false}) => {
+        let url = `chat/${chatId}`
+        if(populate) url += "?populate=true"
+        return {
+          url,
+          credentials: "include",
+        };
+      },
+      providesTags: ["Chat"],
+    }),
   }),
 });
 
 export default api;
-export const {useMyChatsQuery, useLazySearchUserQuery, useSendFriendRequestMutation, useGetNotificationsQuery, useAcceptFriendRequestMutation} = api
+export const {useMyChatsQuery, useLazySearchUserQuery, useSendFriendRequestMutation, useGetNotificationsQuery, useAcceptFriendRequestMutation, useChatDetailsQuery} = api
