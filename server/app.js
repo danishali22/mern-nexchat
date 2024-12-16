@@ -15,6 +15,7 @@ import { getSockets } from "./lib/helper.js";
 import { Message } from "./models/message.js";
 import cors from "cors";
 import { v2 as cloudinary } from "cloudinary";
+import { socketAuthentication } from "./middlewares/auth.js";
 
 dotenv.config({
   path: "./.env",
@@ -36,7 +37,13 @@ cloudinary.config({
 
 const app = express();
 const server = createServer(app);
-const io = new Server(server, {});
+const io = new Server(server, {
+  cors: {
+    origin: process.env.CLIENT_URL,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  },
+});
 
 app.use(express.json());
 app.use(cookieParser());
@@ -57,13 +64,16 @@ app.get("/", (req, res) => {
   res.send("Home Route");
 });
 
-io.use((socket, next) => {});
+io.use((socket, next) => {
+  cookieParser()(
+    socket.request,
+    socket.request.res,
+    async (err) => await socketAuthentication(err, socket, next)
+  );
+});
 
 io.on("connection", (socket) => {
-  const user = {
-    _id: "asdfw",
-    name: "Bhola",
-  };
+  const user = socket.user;
   userSocketIds.set(user._id.toString(), socket.id);
   console.log(userSocketIds);
   console.log("A user connection with socket id", socket.id);

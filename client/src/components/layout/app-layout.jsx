@@ -11,6 +11,7 @@ import { Drawer, Skeleton } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { setIsMobile } from "../../redux/reducers/misc";
 import { useErrors } from "../../hooks/hook";
+import { getSocket } from "../../socket";
 
 /* eslint-disable react/display-name */
 const AppLayout = () => (WrappedComponent) => {
@@ -18,6 +19,9 @@ const AppLayout = () => (WrappedComponent) => {
     const params = useParams();
     const dispatch = useDispatch();
     const chatId = params.chatId;
+
+    const socket = getSocket();
+    console.log("socket", socket.id)
 
     const { user } = useSelector((state) => state.auth);
     const { isMobile } = useSelector((state) => state.misc);
