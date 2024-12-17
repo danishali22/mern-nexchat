@@ -32,15 +32,12 @@ const Chat = ({chatId}) => {
 
   const [message, setMessage] = useState("");
   const members = chatDetails?.data?.chat?.members;
-  console.log("members", chatDetails);
 
   const submitHandler = (e) => {
     e.preventDefault();
     if(!message.trim()) return;
     socket.emit(NEW_MESSAGE, {chatId, members, message});
     setMessage("");
-
-    console.log(message);
   }
 
 
@@ -88,6 +85,7 @@ const Chat = ({chatId}) => {
 
           <InputBox
             placeholder="Type Message Here..."
+            value={message}
             onChange={(e) => setMessage(e.target.value)}
           />
 

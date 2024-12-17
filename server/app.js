@@ -90,9 +90,6 @@ io.on("connection", (socket) => {
       createdAt: new Date().toISOString(),
     };
 
-    console.log("message real time", messageForRealTime);
-    console.log("message members", members);
-
     const messageForDB = {
       content: message,
       sender: user._id,
