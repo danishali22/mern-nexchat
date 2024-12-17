@@ -67,7 +67,7 @@ const AppLayout = () => (WrappedComponent) => {
             )}
           </Grid>
           <Grid size={{ xs: 12, sm: 8, md: 5, lg: 5 }} height={"100%"}>
-            <WrappedComponent {...props} chatId={chatId} />
+            <WrappedComponent {...props} chatId={chatId} user={user} />
           </Grid>
           <Grid
             size={{ md: 4, lg: 4 }}

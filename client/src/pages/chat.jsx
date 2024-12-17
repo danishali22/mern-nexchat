@@ -2,6 +2,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import  {
   Fragment,
+  useCallback,
   useRef,
   useState
 } from "react";
@@ -19,18 +20,19 @@ import FileMenu from "../components/dialog/file-menu";
 import { getSocket } from "../socket";
 import { NEW_MESSAGE } from "../constants/event";
 import { useChatDetailsQuery } from "../redux/api/api";
+import { useErrors, useSocketEvents } from "../hooks/hook";
 
-const user = {
-  _id: "sdfsdfsdf",
-  name: "Dummy",
-};
-const Chat = ({chatId}) => {
+const Chat = ({chatId, user}) => {
   const containerRef = useRef(null);
 
   const socket = getSocket();
   const chatDetails = useChatDetailsQuery({chatId, skip: !chatId});
 
+  const errors = [{error: chatDetails.error, isError: chatDetails.isError}]
+
   const [message, setMessage] = useState("");
+  const [messages, setMessages] = useState([]);
+  
   const members = chatDetails?.data?.chat?.members;
 
   const submitHandler = (e) => {
@@ -40,6 +42,15 @@ const Chat = ({chatId}) => {
     setMessage("");
   }
 
+  const newMessageHandler = useCallback((data)=>{
+    setMessages((prev)=> [...prev, data.message]);
+  }, [])
+
+  const eventHandler = {[NEW_MESSAGE]: newMessageHandler}
+
+  useSocketEvents(socket, eventHandler);
+
+  useErrors(errors);
 
   return chatDetails.isLoading ? ( <Skeleton /> ) : (
     <Fragment>
@@ -55,7 +66,7 @@ const Chat = ({chatId}) => {
           overflowY: "auto",
         }}
       >
-        {sampleMessage.map((i) => (
+        {messages.map((i) => (
           <MessageComponent key={i._id} message={i} user={user} />
         ))}
       </Stack>
