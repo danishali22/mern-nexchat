@@ -14,24 +14,38 @@ import {
   Send as SendIcon,
 } from "@mui/icons-material";
 import { InputBox } from "../components/styles/StyledComponent";
-import { sampleMessage } from "../constants/sample-data";
 import MessageComponent from "../components/shared/message-component";
 import FileMenu from "../components/dialog/file-menu";
 import { getSocket } from "../socket";
 import { NEW_MESSAGE } from "../constants/event";
-import { useChatDetailsQuery } from "../redux/api/api";
+import { useChatDetailsQuery, useGetMessagesQuery } from "../redux/api/api";
 import { useErrors, useSocketEvents } from "../hooks/hook";
+import { useInfiniteScrollTop } from "6pp";
 
 const Chat = ({chatId, user}) => {
   const containerRef = useRef(null);
-
   const socket = getSocket();
-  const chatDetails = useChatDetailsQuery({chatId, skip: !chatId});
-
-  const errors = [{error: chatDetails.error, isError: chatDetails.isError}]
 
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
+  const [page, setPage] = useState(1);
+
+  const chatDetails = useChatDetailsQuery({chatId, skip: !chatId});
+
+  const oldMessagesChunk = useGetMessagesQuery({chatId, page});
+
+  const { data: oldMessages, setData: setOldMessages } = useInfiniteScrollTop(
+    containerRef,
+    oldMessagesChunk.data?.totalPages,
+    page,
+    setPage,
+    oldMessagesChunk.data?.messages
+  );
+
+  const errors = [
+    { error: chatDetails.error, isError: chatDetails.isError },
+    { error: oldMessagesChunk.error, isError: oldMessagesChunk.isError },
+  ];
   
   const members = chatDetails?.data?.chat?.members;
 
@@ -52,7 +66,11 @@ const Chat = ({chatId, user}) => {
 
   useErrors(errors);
 
-  return chatDetails.isLoading ? ( <Skeleton /> ) : (
+  const allMessages = [...oldMessages, ...messages];
+
+  return chatDetails.isLoading ? (
+    <Skeleton />
+  ) : (
     <Fragment>
       <Stack
         ref={containerRef}
@@ -66,7 +84,7 @@ const Chat = ({chatId, user}) => {
           overflowY: "auto",
         }}
       >
-        {messages.map((i) => (
+        {allMessages.map((i) => (
           <MessageComponent key={i._id} message={i} user={user} />
         ))}
       </Stack>
