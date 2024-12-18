@@ -21,14 +21,18 @@ import { NEW_MESSAGE } from "../constants/event";
 import { useChatDetailsQuery, useGetMessagesQuery } from "../redux/api/api";
 import { useErrors, useSocketEvents } from "../hooks/hook";
 import { useInfiniteScrollTop } from "6pp";
+import { setIsFileMenu } from "../redux/reducers/misc";
+import { useDispatch } from "react-redux";
 
 const Chat = ({chatId, user}) => {
   const containerRef = useRef(null);
   const socket = getSocket();
+  const dispatch = useDispatch();
 
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const [page, setPage] = useState(1);
+  const [fileMenuAnchor, setFileMenuAnchor] = useState(null);
 
   const chatDetails = useChatDetailsQuery({chatId, skip: !chatId});
 
@@ -67,6 +71,11 @@ const Chat = ({chatId, user}) => {
   useErrors(errors);
 
   const allMessages = [...oldMessages, ...messages];
+
+  const handleFileOpen = (e) => {
+    dispatch(setIsFileMenu(true));
+    setFileMenuAnchor(e.currentTarget);
+  }
 
   return chatDetails.isLoading ? (
     <Skeleton />
@@ -108,6 +117,7 @@ const Chat = ({chatId, user}) => {
               left: "1.5rem",
               rotate: "30deg",
             }}
+            onClick={handleFileOpen}
           >
             <AttachFileIcon />
           </IconButton>
@@ -135,7 +145,7 @@ const Chat = ({chatId, user}) => {
           </IconButton>
         </Stack>
       </form>
-      <FileMenu />
+      <FileMenu anchorE1={fileMenuAnchor} chatId={chatId} />
     </Fragment>
   );
 }

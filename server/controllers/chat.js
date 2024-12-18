@@ -2,7 +2,7 @@ import { TryCatch } from "../middlewares/error.js";
 import { ErrorHandler } from "../utils/utility.js";
 import { Chat } from "../models/chat.js";
 import { Message } from "../models/message.js";
-import { deleteFilesFromCloudinary, emitEvent } from "../utils/features.js";
+import { deleteFilesFromCloudinary, emitEvent, uploadFilesToCloudinary } from "../utils/features.js";
 import {
   ALERT,
   NEW_ATTACHMENT,
@@ -231,8 +231,7 @@ const sendAttachments = TryCatch(async (req, res, next) => {
   if (files.length > 5)
     return next(new ErrorHandler("Files Can't be more than 5", 400));
 
-  // Upload files here
-  const attachments = [];
+  const attachments = await uploadFilesToCloudinary(files);
   const messageForDB = {
     content: "",
     attachments,
