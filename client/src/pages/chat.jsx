@@ -23,6 +23,7 @@ import { TypingLoader } from "../components/layout/loader";
 
 const Chat = ({ chatId, user }) => {
   const containerRef = useRef(null);
+  const bottomRef = useRef(null);
   const socket = getSocket();
   const dispatch = useDispatch();
 
@@ -66,7 +67,7 @@ const Chat = ({ chatId, user }) => {
     typingTimeOut.current = setTimeout(() => {
       socket.emit(STOP_TYPING, {members, chatId});
       setIamTyping(false);
-    }, [2000])
+    }, [1000])
   }
 
   const submitHandler = (e) => {
@@ -114,6 +115,10 @@ const Chat = ({ chatId, user }) => {
     };
   }, [chatId]);
 
+  useEffect(()=>{
+    if(bottomRef.current) bottomRef.current.scrollIntoView({behaviour: "smooth"});
+  },[messages])
+
   const eventHandler = {
     [NEW_MESSAGE]: newMessagesListener,
     [START_TYPING]: startTypingListener,
@@ -152,6 +157,8 @@ const Chat = ({ chatId, user }) => {
         ))}
 
         {userTyping && <TypingLoader />}
+
+        <div ref={bottomRef} />
       </Stack>
 
       <form
