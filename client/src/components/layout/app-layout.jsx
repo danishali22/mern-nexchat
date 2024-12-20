@@ -13,7 +13,7 @@ import { useErrors, useSocketEvents } from "../../hooks/hook";
 import { getSocket } from "../../socket";
 import { useCallback } from "react";
 import { NEW_MESSAGE_ALERT, NEW_REQUEST } from "../../constants/event";
-import { incrementNotification } from "../../redux/reducers/chat";
+import { incrementNotification, setNewMessageAlert } from "../../redux/reducers/chat";
 
 /* eslint-disable react/display-name */
 const AppLayout = () => (WrappedComponent) => {
@@ -25,6 +25,7 @@ const AppLayout = () => (WrappedComponent) => {
     const socket = getSocket();
     const { user } = useSelector((state) => state.auth);
     const { isMobile } = useSelector((state) => state.misc);
+    const { newMessageAlert } = useSelector((state)=>state.chat);
 
     const { isLoading, data, isError, error, refetch } = useMyChatsQuery("");
 
@@ -37,7 +38,10 @@ const AppLayout = () => (WrappedComponent) => {
 
     const handleMobileClose = () => dispatch(setIsMobile(false))
 
-    const newMessageAlertListener = useCallback(() => {}, []);
+    const newMessageAlertListener = useCallback((data) => {
+      if(data.chatId == chatId) return;
+      dispatch(setNewMessageAlert(data));
+    }, [chatId, dispatch]);
 
     const newRequestListener = useCallback(() => {
       dispatch(incrementNotification());
@@ -64,7 +68,8 @@ const AppLayout = () => (WrappedComponent) => {
               chats={data?.chats}
               chatId={chatId}
               handleDeleteChat={handleDeleteChat}
-            />
+              newMessagesAlert={newMessageAlert}
+              />
           </Drawer>
         )}
         <Grid container height={"calc(100vh - 4rem)"}>
@@ -79,6 +84,7 @@ const AppLayout = () => (WrappedComponent) => {
                 chats={data?.chats}
                 chatId={chatId}
                 handleDeleteChat={handleDeleteChat}
+                newMessagesAlert={newMessageAlert}
               />
             )}
           </Grid>
