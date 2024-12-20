@@ -12,7 +12,7 @@ import { InputBox } from "../components/styles/StyledComponent";
 import MessageComponent from "../components/shared/message-component";
 import FileMenu from "../components/dialog/file-menu";
 import { getSocket } from "../socket";
-import { NEW_MESSAGE, START_TYPING, STOP_TYPING } from "../constants/event";
+import { ALERT, NEW_MESSAGE, START_TYPING, STOP_TYPING } from "../constants/event";
 import { useChatDetailsQuery, useGetMessagesQuery } from "../redux/api/api";
 import { useErrors, useSocketEvents } from "../hooks/hook";
 import { useInfiniteScrollTop } from "6pp";
@@ -104,6 +104,22 @@ const Chat = ({ chatId, user }) => {
     [chatId]
   );
 
+  const alertListener = useCallback(
+    (data) => {
+      const messageForAlert = {
+        content: data,
+        sender: {
+          _id: "qashcqshjdkcvqwdhkv",
+          name: "Admin",
+        },
+        chat: chatId,
+        createdAt: new Date().toISOString(),
+      };
+      setMessages((prev) => [...prev, messageForAlert]);
+    },
+    [chatId]
+  );
+
   useEffect(() => {
     dispatch(removeNewMessagesAlert(chatId));
 
@@ -123,6 +139,7 @@ const Chat = ({ chatId, user }) => {
     [NEW_MESSAGE]: newMessagesListener,
     [START_TYPING]: startTypingListener,
     [STOP_TYPING]: stopTypingListener,
+    [ALERT]: alertListener,
   };
 
   useSocketEvents(socket, eventHandler);
