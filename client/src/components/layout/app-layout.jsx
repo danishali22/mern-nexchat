@@ -10,8 +10,10 @@ import { useMyChatsQuery } from "../../redux/api/api";
 import { Drawer, Skeleton } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { setIsMobile } from "../../redux/reducers/misc";
-import { useErrors } from "../../hooks/hook";
+import { useErrors, useSocketEvents } from "../../hooks/hook";
 import { getSocket } from "../../socket";
+import { useCallback } from "react";
+import { NEW_MESSAGE_ALERT, NEW_REQUEST } from "../../constants/event";
 
 /* eslint-disable react/display-name */
 const AppLayout = () => (WrappedComponent) => {
@@ -34,6 +36,16 @@ const AppLayout = () => (WrappedComponent) => {
     };
 
     const handleMobileClose = () => dispatch(setIsMobile(false))
+
+    const newMessageAlertHandler = useCallback(() => {}, []);
+    const newRequestHandler = useCallback(() => {}, []);
+
+    const eventHandler = {
+      [NEW_MESSAGE_ALERT]: newMessageAlertHandler,
+      [NEW_REQUEST]: newRequestHandler,
+    };
+
+    useSocketEvents(socket, eventHandler);
 
     return (
       <>

@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import mongoose from "mongoose"
 import { v4 as uuid } from "uuid";
 import { v2 as cloudinary } from "cloudinary";
-import { getBase64 } from "../lib/helper.js";
+import { getBase64, getSockets } from "../lib/helper.js";
 import { User } from "../models/user.js";
 
 const cookieOptions = {
@@ -29,7 +29,11 @@ const sendToken = (res, user, code, message) => {
 }
 
 const emitEvent = (req, event, users, data) => {
-    console.log("Emitting Event");
+  // console.log("mbms char emt", users);
+  let io = req.app.get("io");
+  const userSockets = getSockets(users);
+  // console.log("mbms sockets", userSockets);
+  io.to(userSockets).emit(event, data);
 }
 
 const uploadFilesToCloudinary = async (files = []) => {

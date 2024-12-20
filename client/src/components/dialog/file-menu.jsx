@@ -15,7 +15,6 @@ const FileMenu = ({ anchorE1, chatId }) => {
   const { isFileMenu } = useSelector((state) => state.misc);
 
   const dispatch = useDispatch();
-
   const imageRef = useRef(null);
   const audioRef = useRef(null);
   const videoRef = useRef(null);

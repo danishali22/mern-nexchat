@@ -45,6 +45,8 @@ const io = new Server(server, {
   },
 });
 
+app.set("io", io);
+
 app.use(express.json());
 app.use(cookieParser());
 app.use(
@@ -75,10 +77,11 @@ io.use((socket, next) => {
 io.on("connection", (socket) => {
   const user = socket.user;
   userSocketIds.set(user._id.toString(), socket.id);
-  console.log(userSocketIds);
   console.log("A user connection with socket id", socket.id);
 
   socket.on(NEW_MESSAGE, async ({ chatId, members, message }) => {
+    console.log("Attachments received  msg");
+    console.log("Attachments received:", message);
     const messageForRealTime = {
       content: message,
       id: uuid(),
