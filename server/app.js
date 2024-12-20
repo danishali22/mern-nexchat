@@ -10,7 +10,12 @@ import { v4 as uuid } from "uuid";
 import userRoutes from "./routes/user.js";
 import chatRoutes from "./routes/chat.js";
 import adminRoutes from "./routes/admin.js";
-import { NEW_MESSAGE, NEW_MESSAGE_ALERT } from "./constants/event.js";
+import {
+  NEW_MESSAGE,
+  NEW_MESSAGE_ALERT,
+  START_TYPING,
+  STOP_TYPING,
+} from "./constants/event.js";
 import { getSockets } from "./lib/helper.js";
 import { Message } from "./models/message.js";
 import cors from "cors";
@@ -112,6 +117,19 @@ io.on("connection", (socket) => {
       console.log(error);
     }
   });
+
+  socket.on(START_TYPING, ({members, chatId})=>{
+    console.log("start typing", chatId);
+    const membersSocket = getSockets(members);
+    socket.to(membersSocket).emit(START_TYPING, {chatId});
+  })
+
+  socket.on(STOP_TYPING, ({members, chatId})=>{
+    console.log("stop typing", chatId);
+    const membersSocket = getSockets(members);
+    socket.to(membersSocket).emit(STOP_TYPING, {chatId});
+  })
+
   socket.on("disconnect", () => {
     console.log("A user disconnected with socket id", socket.id);
     userSocketIds.delete(user._id.toString());
