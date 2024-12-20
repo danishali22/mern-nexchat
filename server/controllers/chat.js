@@ -383,7 +383,6 @@ const getMessages = TryCatch(async (req, res, next) => {
   ]);
   
   const totalPages = Math.ceil(totalMessagesCount/limit) || 0;
-  console.log("totalPages", totalPages);
 
   return res.status(200).json({
     success: true,

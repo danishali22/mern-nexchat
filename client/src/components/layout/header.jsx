@@ -2,6 +2,7 @@
 import {
   AppBar,
   Backdrop,
+  Badge,
   Box,
   IconButton,
   Toolbar,
@@ -19,16 +20,22 @@ import {
 } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { lazy, Suspense } from "react";
-import {server} from "../../constants/config";
+import { server } from "../../constants/config";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { userNotExists } from "../../redux/reducers/auth";
-import { setIsMobile, setIsNewGroup, setIsNotification, setIsSearch } from "../../redux/reducers/misc";
+import {
+  setIsMobile,
+  setIsNewGroup,
+  setIsNotification,
+  setIsSearch,
+} from "../../redux/reducers/misc";
+import { resetNotifications } from "../../redux/reducers/chat";
 
-const SearchDialog = lazy(()=> import("../specific/search"));
-const NotificationsDialog = lazy(()=> import("../specific/notifications"));
-const NewGroupDialog = lazy(()=> import("../specific/new-group"));
+const SearchDialog = lazy(() => import("../specific/search"));
+const NotificationsDialog = lazy(() => import("../specific/notifications"));
+const NewGroupDialog = lazy(() => import("../specific/new-group"));
 
 const Header = () => {
   const navigate = useNavigate();
@@ -38,14 +45,19 @@ const Header = () => {
     (state) => state.misc
   );
 
+  const { notificationCount } = useSelector((state) => state.chat);
+
   const handleMobile = () => dispatch(setIsMobile(true));
 
   const openSearch = () => dispatch(setIsSearch(true));
 
   const openNewGroup = () => dispatch(setIsNewGroup(true));
 
-  const openNotifications = () => dispatch(setIsNotification(true));
-  
+  const openNotifications = () => {
+    dispatch(setIsNotification(true));
+    dispatch(resetNotifications())
+  };
+
   const navigateToGroup = () => navigate("/group");
   const logoutHandler = async () => {
     try {
@@ -103,6 +115,7 @@ const Header = () => {
                 title="Notifications"
                 icon={<NotificationsIcon />}
                 onClick={openNotifications}
+                value={notificationCount}
               />
               <IconBtn
                 title="Logout"
@@ -132,11 +145,11 @@ const Header = () => {
   );
 };
 
-const IconBtn = ({ title, icon, onClick }) => {
+const IconBtn = ({ title, icon, onClick, value }) => {
   return (
     <Tooltip title={title}>
       <IconButton color="inherit" size="large" onClick={onClick}>
-        {icon}
+        {value ? <Badge badgeContent={value} color="error">{icon}</Badge> : icon}
       </IconButton>
     </Tooltip>
   );

@@ -3,6 +3,7 @@
 import  {
   Fragment,
   useCallback,
+  useEffect,
   useRef,
   useState
 } from "react";
@@ -60,11 +61,25 @@ const Chat = ({chatId, user}) => {
     setMessage("");
   }
 
-  const newMessageHandler = useCallback((data)=>{
-    setMessages((prev)=> [...prev, data.message]);
-  }, [])
+  const newMessagesListener = useCallback(
+    (data) => {
+      if (data.chatId !== chatId) return;
 
-  const eventHandler = {[NEW_MESSAGE]: newMessageHandler}
+      setMessages((prev) => [...prev, data.message]);
+    },
+    [chatId]
+  );
+
+  useEffect(()=> {
+    return () => {
+      setMessages([]);
+      setMessage("");
+      setOldMessages([]);
+      setPage(1);
+    }
+  }, [chatId])
+
+  const eventHandler = { [NEW_MESSAGE]: newMessagesListener };
 
   useSocketEvents(socket, eventHandler);
 

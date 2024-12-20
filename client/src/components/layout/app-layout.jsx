@@ -3,7 +3,6 @@ import Grid from "@mui/material/Grid2";
 import Title from "../shared/title";
 import Header from "./header";
 import ChatList from "../specific/chat-list";
-import { samepleChats } from "../../constants/sample-data";
 import { useParams } from "react-router-dom";
 import Profile from "../specific/profile";
 import { useMyChatsQuery } from "../../redux/api/api";
@@ -14,6 +13,7 @@ import { useErrors, useSocketEvents } from "../../hooks/hook";
 import { getSocket } from "../../socket";
 import { useCallback } from "react";
 import { NEW_MESSAGE_ALERT, NEW_REQUEST } from "../../constants/event";
+import { incrementNotification } from "../../redux/reducers/chat";
 
 /* eslint-disable react/display-name */
 const AppLayout = () => (WrappedComponent) => {
@@ -37,12 +37,16 @@ const AppLayout = () => (WrappedComponent) => {
 
     const handleMobileClose = () => dispatch(setIsMobile(false))
 
-    const newMessageAlertHandler = useCallback(() => {}, []);
-    const newRequestHandler = useCallback(() => {}, []);
+    const newMessageAlertListener = useCallback(() => {}, []);
+
+    const newRequestListener = useCallback(() => {
+      dispatch(incrementNotification());
+    }, [dispatch]);
+
 
     const eventHandler = {
-      [NEW_MESSAGE_ALERT]: newMessageAlertHandler,
-      [NEW_REQUEST]: newRequestHandler,
+      [NEW_MESSAGE_ALERT]: newMessageAlertListener,
+      [NEW_REQUEST]: newRequestListener,
     };
 
     useSocketEvents(socket, eventHandler);
