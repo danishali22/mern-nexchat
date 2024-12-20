@@ -1,13 +1,7 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable react-refresh/only-export-components */
-import  {
-  Fragment,
-  useCallback,
-  useEffect,
-  useRef,
-  useState
-} from "react";
-import AppLayout from "../components/layout/app-layout"
+import { Fragment, useCallback, useEffect, useRef, useState } from "react";
+import AppLayout from "../components/layout/app-layout";
 import { IconButton, Skeleton, Stack } from "@mui/material";
 import { grayColor, orange } from "../constants/color";
 import {
@@ -24,9 +18,9 @@ import { useErrors, useSocketEvents } from "../hooks/hook";
 import { useInfiniteScrollTop } from "6pp";
 import { setIsFileMenu } from "../redux/reducers/misc";
 import { useDispatch } from "react-redux";
-import { removeNewMessageAlert } from "../redux/reducers/chat";
+import { removeNewMessagesAlert } from "../redux/reducers/chat";
 
-const Chat = ({chatId, user}) => {
+const Chat = ({ chatId, user }) => {
   const containerRef = useRef(null);
   const socket = getSocket();
   const dispatch = useDispatch();
@@ -36,9 +30,9 @@ const Chat = ({chatId, user}) => {
   const [page, setPage] = useState(1);
   const [fileMenuAnchor, setFileMenuAnchor] = useState(null);
 
-  const chatDetails = useChatDetailsQuery({chatId, skip: !chatId});
+  const chatDetails = useChatDetailsQuery({ chatId, skip: !chatId });
 
-  const oldMessagesChunk = useGetMessagesQuery({chatId, page});
+  const oldMessagesChunk = useGetMessagesQuery({ chatId, page });
 
   const { data: oldMessages, setData: setOldMessages } = useInfiniteScrollTop(
     containerRef,
@@ -52,15 +46,15 @@ const Chat = ({chatId, user}) => {
     { error: chatDetails.error, isError: chatDetails.isError },
     { error: oldMessagesChunk.error, isError: oldMessagesChunk.isError },
   ];
-  
+
   const members = chatDetails?.data?.chat?.members;
 
   const submitHandler = (e) => {
     e.preventDefault();
-    if(!message.trim()) return;
-    socket.emit(NEW_MESSAGE, {chatId, members, message});
+    if (!message.trim()) return;
+    socket.emit(NEW_MESSAGE, { chatId, members, message });
     setMessage("");
-  }
+  };
 
   const newMessagesListener = useCallback(
     (data) => {
@@ -71,17 +65,16 @@ const Chat = ({chatId, user}) => {
     [chatId]
   );
 
-  useEffect(()=> {
-
-    dispatch(removeNewMessageAlert(chatId))
+  useEffect(() => {
+    dispatch(removeNewMessagesAlert(chatId));
 
     return () => {
       setMessages([]);
       setMessage("");
       setOldMessages([]);
       setPage(1);
-    }
-  }, [chatId])
+    };
+  }, [chatId]);
 
   const eventHandler = { [NEW_MESSAGE]: newMessagesListener };
 
@@ -94,7 +87,7 @@ const Chat = ({chatId, user}) => {
   const handleFileOpen = (e) => {
     dispatch(setIsFileMenu(true));
     setFileMenuAnchor(e.currentTarget);
-  }
+  };
 
   return chatDetails.isLoading ? (
     <Skeleton />
@@ -167,6 +160,6 @@ const Chat = ({chatId, user}) => {
       <FileMenu anchorE1={fileMenuAnchor} chatId={chatId} />
     </Fragment>
   );
-}
+};
 
-export default AppLayout()(Chat)
+export default AppLayout()(Chat);

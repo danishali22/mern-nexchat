@@ -31,7 +31,7 @@ import {
   setIsNotification,
   setIsSearch,
 } from "../../redux/reducers/misc";
-import { resetNotifications } from "../../redux/reducers/chat";
+import { resetNotificationCount } from "../../redux/reducers/chat";
 
 const SearchDialog = lazy(() => import("../specific/search"));
 const NotificationsDialog = lazy(() => import("../specific/notifications"));
@@ -55,7 +55,7 @@ const Header = () => {
 
   const openNotifications = () => {
     dispatch(setIsNotification(true));
-    dispatch(resetNotifications())
+    dispatch(resetNotificationCount());
   };
 
   const navigateToGroup = () => navigate("/group");
@@ -149,7 +149,13 @@ const IconBtn = ({ title, icon, onClick, value }) => {
   return (
     <Tooltip title={title}>
       <IconButton color="inherit" size="large" onClick={onClick}>
-        {value ? <Badge badgeContent={value} color="error">{icon}</Badge> : icon}
+        {value ? (
+          <Badge badgeContent={value} color="error">
+            {icon}
+          </Badge>
+        ) : (
+          icon
+        )}
       </IconButton>
     </Tooltip>
   );
