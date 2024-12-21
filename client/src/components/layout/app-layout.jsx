@@ -3,7 +3,7 @@ import Grid from "@mui/material/Grid2";
 import Title from "../shared/title";
 import Header from "./header";
 import ChatList from "../specific/chat-list";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Profile from "../specific/profile";
 import { useMyChatsQuery } from "../../redux/api/api";
 import { Drawer, Skeleton } from "@mui/material";
@@ -24,6 +24,7 @@ const AppLayout = () => (WrappedComponent) => {
   return (props) => {
     const params = useParams();
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const chatId = params.chatId;
 
     const socket = getSocket();
@@ -62,14 +63,15 @@ const AppLayout = () => (WrappedComponent) => {
       dispatch(incrementNotification());
     }, [dispatch]);
 
-    const refetchListner = useCallback(()=>{
+    const refetchListener = useCallback(() => {
       refetch();
-    },[refetch]);
+      navigate("/");
+    }, [refetch, navigate]);
 
     const eventHandler = {
       [NEW_MESSAGE_ALERT]: newMessageAlertListener,
       [NEW_REQUEST]: newRequestListener,
-      [REFETCH_CHATS]: refetchListner,
+      [REFETCH_CHATS]: refetchListener,
     };
 
     useSocketEvents(socket, eventHandler);

@@ -29,10 +29,8 @@ const sendToken = (res, user, code, message) => {
 }
 
 const emitEvent = (req, event, users, data) => {
-  // console.log("mbms char emt", users);
   let io = req.app.get("io");
   const userSockets = getSockets(users);
-  // console.log("mbms sockets", userSockets);
   io.to(userSockets).emit(event, data);
 }
 
