@@ -1,11 +1,34 @@
-import { Menu, Stack, Typography } from "@mui/material";
-import React, { useEffect } from "react";
-import { setIsDeleteMenu } from "../../redux/reducers/misc";
 import {
   Delete as DeleteIcon,
   ExitToApp as ExitToAppIcon,
 } from "@mui/icons-material";
+import { Menu, Stack, Typography } from "@mui/material";
+import React, { useEffect } from "react";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { useAsyncMutation } from "../../hooks/hook";
+import {
+  useDeleteChatMutation,
+  useLeaveGroupMutation,
+} from "../../redux/api/api";
+import { setIsDeleteMenu } from "../../redux/reducers/misc";
 
+const DeleteChatMenu = ({ dispatch, deleteMenuAnchor }) => {
+  const navigate = useNavigate();
+
+  const { isDeleteMenu, selectedDeleteChat } = useSelector(
+    (state) => state.misc
+  );
+
+  const [deleteChat, _, deleteChatData] = useAsyncMutation(
+    useDeleteChatMutation
+  );
+
+  const [leaveGroup, __, leaveGroupData] = useAsyncMutation(
+    useLeaveGroupMutation
+  );
+
+  const isGroup = selectedDeleteChat.groupChat;
 
   const closeHandler = () => {
     dispatch(setIsDeleteMenu(false));

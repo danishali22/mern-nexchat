@@ -204,7 +204,7 @@ const leaveGroup = TryCatch(async (req, res, next) => {
 
   return res.status(200).json({
     success: true,
-    message: `${user.name} has left the group successfully`,
+    message: `Leave group successfully`,
   });
 });
 
@@ -316,17 +316,24 @@ const deleteChat = TryCatch(async (req, res, next) => {
   const chatId = req.params.id;
 
   const chat = await Chat.findById(chatId);
-  if(!chat) return next(new ErrorHandler("Chat not found", 400));
-  
+
+  if (!chat) return next(new ErrorHandler("Chat not found", 404));
+
   const members = chat.members;
 
-  if(chat.groupChat && chat.creator.toString() !== req.user.toString())
-    return next(new ErrorHandler("You are not alowed to delete this group chat", 403));
-  
-  if(!chat.groupChat && !members.include(req.user.toString()))
-    return next(new ErrorHandler("You are not alowed to delete this chat", 403));
+  if (chat.groupChat && chat.creator.toString() !== req.user.toString())
+    return next(
+      new ErrorHandler("You are not allowed to delete the group", 403)
+    );
 
-  // here we delete all message as well as attachments or files from cloudinary
+  if (!chat.groupChat && !chat.members.includes(req.user.toString())) {
+    return next(
+      new ErrorHandler("You are not allowed to delete the chat", 403)
+    );
+  }
+
+  //   Here we have to dete All Messages as well as attachments or files from cloudinary
+
   const messagesWithAttachments = await Message.find({
     chat: chatId,
     attachments: { $exists: true, $ne: [] },
@@ -334,23 +341,21 @@ const deleteChat = TryCatch(async (req, res, next) => {
 
   const public_ids = [];
 
-  messagesWithAttachments.forEach((attachment)=>{
-    attachment.attachments.forEach(({public_id})=>{
-      public_ids.push(public_id);
-    });
-  });
+  messagesWithAttachments.forEach(({ attachments }) =>
+    attachments.forEach(({ public_id }) => public_ids.push(public_id))
+  );
 
   await Promise.all([
     deleteFilesFromCloudinary(public_ids),
-    Chat.deleteOne(),
-    Message.deleteMany({chat: chatId}),
+    chat.deleteOne(),
+    Message.deleteMany({ chat: chatId }),
   ]);
 
   emitEvent(req, REFETCH_CHATS, members);
 
   return res.status(200).json({
     success: true,
-    message: "Chat deleted successfully!",
+    message: "Chat deleted successfully",
   });
 });
 

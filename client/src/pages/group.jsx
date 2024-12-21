@@ -13,6 +13,7 @@ import {
   Backdrop,
   Box,
   Button,
+  CircularProgress,
   Drawer,
   IconButton,
   Skeleton,
@@ -33,7 +34,7 @@ const AddMemberDialog = lazy(()=>import("../components/dialog/add-member-dialog"
 const ConfirmDeleteDialog = lazy(()=>import("../components/dialog/confirm-delete-dialog"))
 import UserItem from "../components/shared/user-item";
 import { useDispatch, useSelector } from "react-redux";
-import { useChatDetailsQuery, useMyGroupsQuery, useRemoveMemberMutation, useRenameGroupMutation } from "../redux/api/api";
+import { useChatDetailsQuery, useDeleteChatMutation, useMyGroupsQuery, useRemoveMemberMutation, useRenameGroupMutation } from "../redux/api/api";
 import { useAsyncMutation, useErrors } from "../hooks/hook";
 import { setIsAddMember } from "../redux/reducers/misc";
 
@@ -55,6 +56,7 @@ const Groups = () => {
   const [removeGroup, isLoadingRemoveMember] = useAsyncMutation(
     useRemoveMemberMutation
   );
+  const [deleteGroup, isLoadingDeleteGroup] = useAsyncMutation(useDeleteChatMutation);
 
   const errors = [
     {
@@ -121,8 +123,9 @@ const Groups = () => {
   }
 
   const deleteHandler = () => {
-    console.log("Delete Handler");
+    deleteGroup("Deleteting group...", chatId);
     closeConfirmDeleteHandler();
+    navigate("/");
   }
 
   const openAddMemberHandler = () => {
@@ -303,7 +306,7 @@ const Groups = () => {
               overflow={"auto"}
             >
               {isLoadingRemoveMember ? (
-                <Skeleton />
+                <CircularProgress />
               ) : (
                 members.map((i) => (
                   <UserItem
