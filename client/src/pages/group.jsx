@@ -27,12 +27,12 @@ import AvatarCard from "../components/shared/avatar-card";
 import { Link } from "../components/styles/StyledComponent";
 import { bgGradient, matBlack } from "../constants/color";
 
-import { samepleChats, sampleUsers } from "../constants/sample-data";
+
 const AddMemberDialog = lazy(()=>import("../components/dialog/add-member-dialog"))
 const ConfirmDeleteDialog = lazy(()=>import("../components/dialog/confirm-delete-dialog"))
 import UserItem from "../components/shared/user-item";
 import { useDispatch } from "react-redux";
-import { useMyGroupsQuery } from "../redux/api/api";
+import { useChatDetailsQuery, useMyGroupsQuery } from "../redux/api/api";
 import { useErrors } from "../hooks/hook";
 
 const Groups = () => {
@@ -41,6 +41,11 @@ const Groups = () => {
   const navigate = useNavigate();
 
   const myGroups = useMyGroupsQuery("");
+
+  const groupDetails = useChatDetailsQuery(
+    {chatId, populate: true},
+    {skip: !chatId},
+  );
 
   const errors = [
     {
@@ -57,7 +62,24 @@ const Groups = () => {
   const [confirmDeleteDialog, setConfirmDeleteDialog] = useState(false);
   const [groupName, setGroupName] = useState("");
   const [groupNameUpdatedValue, setGroupNameUpdatedValue] = useState("");
+  const [members, setMembers] = useState([]);
 
+  const groupData = groupDetails.data;
+
+  useEffect(() => {
+    if(groupData){
+      setGroupName(groupData.chat.name);
+      setGroupNameUpdatedValue(groupData.chat.name);
+      setMembers(groupData.chat.members);
+    }
+
+    return () => {
+      setGroupName("");
+      setGroupNameUpdatedValue("");
+      setMembers([]);
+      setIsEdit(false);
+    }
+  }, [groupData]);
 
   const navigateBack = () => {
     navigate("/");
@@ -263,7 +285,7 @@ const Groups = () => {
               height={"50vh"}
               overflow={"auto"}
             >
-              {sampleUsers.map((i) => (
+              {members.map((i) => (
                 <UserItem
                   user={i}
                   key={i._id}
@@ -309,7 +331,7 @@ const Groups = () => {
         open={isMobileMenuOpen}
         onClose={handleMobileClose}
       >
-        <GroupsList w={"50vw"} myGroups={samepleChats} chatId={chatId} />
+        <GroupsList w={"50vw"} myGroups={myGroups?.data?.groups} chatId={chatId} />
       </Drawer>
     </Grid>
   );
