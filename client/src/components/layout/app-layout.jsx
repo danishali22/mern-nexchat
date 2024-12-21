@@ -12,7 +12,7 @@ import { setIsMobile } from "../../redux/reducers/misc";
 import { useErrors, useSocketEvents } from "../../hooks/hook";
 import { getSocket } from "../../socket";
 import { useCallback, useEffect } from "react";
-import { NEW_MESSAGE_ALERT, NEW_REQUEST } from "../../constants/event";
+import { NEW_MESSAGE_ALERT, NEW_REQUEST, REFETCH_CHATS } from "../../constants/event";
 import {
   incrementNotification,
   setNewMessagesAlert,
@@ -62,9 +62,14 @@ const AppLayout = () => (WrappedComponent) => {
       dispatch(incrementNotification());
     }, [dispatch]);
 
+    const refetchListner = useCallback(()=>{
+      refetch();
+    },[refetch]);
+
     const eventHandler = {
       [NEW_MESSAGE_ALERT]: newMessageAlertListener,
       [NEW_REQUEST]: newRequestListener,
+      [REFETCH_CHATS]: refetchListner,
     };
 
     useSocketEvents(socket, eventHandler);

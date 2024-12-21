@@ -32,8 +32,8 @@ const AddMemberDialog = lazy(()=>import("../components/dialog/add-member-dialog"
 const ConfirmDeleteDialog = lazy(()=>import("../components/dialog/confirm-delete-dialog"))
 import UserItem from "../components/shared/user-item";
 import { useDispatch } from "react-redux";
-import { useChatDetailsQuery, useMyGroupsQuery } from "../redux/api/api";
-import { useErrors } from "../hooks/hook";
+import { useChatDetailsQuery, useMyGroupsQuery, useRenameGroupMutation } from "../redux/api/api";
+import { useAsyncMutation, useErrors } from "../hooks/hook";
 
 const Groups = () => {
   const dispatch = useDispatch();
@@ -46,6 +46,8 @@ const Groups = () => {
     {chatId, populate: true},
     {skip: !chatId},
   );
+
+  const [renameGroup, isLoadingGroupName] = useAsyncMutation(useRenameGroupMutation);
 
   const errors = [
     {
@@ -91,7 +93,10 @@ const Groups = () => {
 
   const updateGroupName = () => {
     setIsEdit(false);
-    console.log(groupNameUpdatedValue);
+    renameGroup("Updating group name...", {
+      chatId,
+      name: groupNameUpdatedValue,
+    });
   };
 
   const handleMobileClose = () => setIsMobileMenuOpen(false);
@@ -184,14 +189,17 @@ const Groups = () => {
             value={groupNameUpdatedValue}
             onChange={(e) => setGroupNameUpdatedValue(e.target.value)}
           />
-          <IconButton onClick={updateGroupName}>
+          <IconButton onClick={updateGroupName} disabled={isLoadingGroupName}>
             <DoneIcon />
           </IconButton>
         </>
       ) : (
         <>
           <Typography variant="h4">{groupName}</Typography>
-          <IconButton onClick={() => setIsEdit(true)}>
+          <IconButton
+            onClick={() => setIsEdit(true)}
+            disabled={isLoadingGroupName}
+          >
             <EditIcon />
           </IconButton>
         </>
