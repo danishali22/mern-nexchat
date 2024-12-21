@@ -15,6 +15,7 @@ import {
   Button,
   Drawer,
   IconButton,
+  Skeleton,
   Stack,
   TextField,
   Tooltip,
@@ -31,9 +32,10 @@ import { bgGradient, matBlack } from "../constants/color";
 const AddMemberDialog = lazy(()=>import("../components/dialog/add-member-dialog"))
 const ConfirmDeleteDialog = lazy(()=>import("../components/dialog/confirm-delete-dialog"))
 import UserItem from "../components/shared/user-item";
-import { useDispatch } from "react-redux";
-import { useChatDetailsQuery, useMyGroupsQuery, useRenameGroupMutation } from "../redux/api/api";
+import { useDispatch, useSelector } from "react-redux";
+import { useChatDetailsQuery, useMyGroupsQuery, useRemoveMemberMutation, useRenameGroupMutation } from "../redux/api/api";
 import { useAsyncMutation, useErrors } from "../hooks/hook";
+import { setIsAddMember } from "../redux/reducers/misc";
 
 const Groups = () => {
   const dispatch = useDispatch();
@@ -47,20 +49,28 @@ const Groups = () => {
     {skip: !chatId},
   );
 
+  const { isAddMember } = useSelector((state) => state.misc);
+
   const [renameGroup, isLoadingGroupName] = useAsyncMutation(useRenameGroupMutation);
+  const [removeGroup, isLoadingRemoveMember] = useAsyncMutation(
+    useRemoveMemberMutation
+  );
 
   const errors = [
     {
       isError: myGroups.isError,
       error: myGroups.error,
-    }
+    },
+    {
+      isError: groupDetails.isError,
+      error: groupDetails.error,
+    },
   ];
 
   useErrors(errors);
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
-  const [isAddMember, setIsAddMember] = useState(false);
   const [confirmDeleteDialog, setConfirmDeleteDialog] = useState(false);
   const [groupName, setGroupName] = useState("");
   const [groupNameUpdatedValue, setGroupNameUpdatedValue] = useState("");
@@ -116,12 +126,11 @@ const Groups = () => {
   }
 
   const openAddMemberHandler = () => {
-    setIsAddMember(true);
-    console.log("Add Member");
+    dispatch(setIsAddMember(true));
   }
 
-  const removeMemberHandler = (id) => {
-    console.log("Remove Member", id)
+  const removeMemberHandler = (userId) => {
+    removeGroup("Removing group member...", {chatId, userId})
   }
 
   useEffect(() => {
@@ -293,19 +302,23 @@ const Groups = () => {
               height={"50vh"}
               overflow={"auto"}
             >
-              {members.map((i) => (
-                <UserItem
-                  user={i}
-                  key={i._id}
-                  isAdded
-                  styling={{
-                    boxShadow: "0 0 0.5rem  rgba(0,0,0,0.2)",
-                    padding: "1rem 2rem",
-                    borderRadius: "1rem",
-                  }}
-                  handler={removeMemberHandler}
-                />
-              ))}
+              {isLoadingRemoveMember ? (
+                <Skeleton />
+              ) : (
+                members.map((i) => (
+                  <UserItem
+                    user={i}
+                    key={i._id}
+                    isAdded
+                    styling={{
+                      boxShadow: "0 0 0.5rem  rgba(0,0,0,0.2)",
+                      padding: "1rem 2rem",
+                      borderRadius: "1rem",
+                    }}
+                    handler={removeMemberHandler}
+                  />
+                ))
+              )}
             </Stack>
 
             {ButtonGroup}
@@ -339,7 +352,11 @@ const Groups = () => {
         open={isMobileMenuOpen}
         onClose={handleMobileClose}
       >
-        <GroupsList w={"50vw"} myGroups={myGroups?.data?.groups} chatId={chatId} />
+        <GroupsList
+          w={"50vw"}
+          myGroups={myGroups?.data?.groups}
+          chatId={chatId}
+        />
       </Drawer>
     </Grid>
   );
