@@ -31,8 +31,26 @@ import { samepleChats, sampleUsers } from "../constants/sample-data";
 const AddMemberDialog = lazy(()=>import("../components/dialog/add-member-dialog"))
 const ConfirmDeleteDialog = lazy(()=>import("../components/dialog/confirm-delete-dialog"))
 import UserItem from "../components/shared/user-item";
+import { useDispatch } from "react-redux";
+import { useMyGroupsQuery } from "../redux/api/api";
+import { useErrors } from "../hooks/hook";
 
 const Groups = () => {
+  const dispatch = useDispatch();
+  const chatId = useSearchParams()[0].get("group");
+  const navigate = useNavigate();
+
+  const myGroups = useMyGroupsQuery("");
+
+  const errors = [
+    {
+      isError: myGroups.isError,
+      error: myGroups.error,
+    }
+  ];
+
+  useErrors(errors);
+
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [isAddMember, setIsAddMember] = useState(false);
@@ -40,8 +58,6 @@ const Groups = () => {
   const [groupName, setGroupName] = useState("");
   const [groupNameUpdatedValue, setGroupNameUpdatedValue] = useState("");
 
-  const chatId = useSearchParams()[0].get("group");
-  const navigate = useNavigate();
 
   const navigateBack = () => {
     navigate("/");
@@ -206,7 +222,7 @@ const Groups = () => {
         sm={4}
         bgcolor={"bisque"}
       >
-        <GroupsList myGroups={samepleChats} chatId={chatId} />
+        <GroupsList myGroups={myGroups?.data?.groups} chatId={chatId} />
       </Grid>
 
       <Grid
@@ -247,22 +263,19 @@ const Groups = () => {
               height={"50vh"}
               overflow={"auto"}
             >
-              {
-                sampleUsers.map((i) => (
-                  <UserItem
-                    user={i}
-                    key={i._id}
-                    isAdded
-                    styling={{
-                      boxShadow: "0 0 0.5rem  rgba(0,0,0,0.2)",
-                      padding: "1rem 2rem",
-                      borderRadius: "1rem",
-                    }}
-                    handler={removeMemberHandler}
-                  />
-                ))
-              }
-            
+              {sampleUsers.map((i) => (
+                <UserItem
+                  user={i}
+                  key={i._id}
+                  isAdded
+                  styling={{
+                    boxShadow: "0 0 0.5rem  rgba(0,0,0,0.2)",
+                    padding: "1rem 2rem",
+                    borderRadius: "1rem",
+                  }}
+                  handler={removeMemberHandler}
+                />
+              ))}
             </Stack>
 
             {ButtonGroup}
