@@ -24,19 +24,16 @@ import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [isLogin, setIsLogin] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+
   const toggleLogin = () => setIsLogin((prev) => !prev);
   const dispatch = useDispatch();
-  const navigate = useNavigate();
-
-  // const config = {
-  //   withCredentials: true,
-  //   headers: {
-  //     'Content-Type': 'application/json',
-  //   },
-  // };
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    const toastId = toast.loading("Logging In...");
+
+    setIsLoading(true);
     const config = {
       withCredentials: true,
       headers: {
@@ -53,18 +50,23 @@ const Login = () => {
         },
         config
       );
-
       dispatch(userExists(data.user));
-      toast.success(data.message);
-      console.log(data);
+      toast.success(data.message, {
+        id: toastId,
+      });
     } catch (error) {
-      toast.error(error?.response?.data?.message || "Something Went Wrong");
+      toast.error(error?.response?.data?.message || "Something Went Wrong", {
+        id: toastId,
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleRegister = async (e) => {
     e.preventDefault();
     const toastId = toast.loading("Signing Up...");
+    setIsLoading(true);
 
     const formData = new FormData();
     formData.append("avatar", avatar.file);
@@ -81,11 +83,7 @@ const Login = () => {
     };
 
     try {
-      const { data } = await axios.post(
-        `${server}/user/new`,
-        formData,
-        config
-      );
+      const { data } = await axios.post(`${server}/user/new`, formData, config);
 
       dispatch(userExists(data.user));
       toast.success(data.message, {
@@ -95,6 +93,8 @@ const Login = () => {
       toast.error(error?.response?.data?.message || "Something Went Wrong", {
         id: toastId,
       });
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -172,6 +172,7 @@ const Login = () => {
                   color="primary"
                   type="submit"
                   sx={{ marginTop: "1rem" }}
+                  disabled={isLoading}
                 >
                   Login
                 </Button>
@@ -183,13 +184,14 @@ const Login = () => {
                 color="secondary"
                 fullWidth
                 onClick={toggleLogin}
+                disabled={isLoading}
               >
-                Register
+                Sign Up Instead
               </Button>
             </>
           ) : (
             <>
-              <Typography variant="h4">Register</Typography>
+              <Typography variant="h4">Sign Up</Typography>
               <form
                 onSubmit={handleRegister}
                 style={{ width: "100%", marginTop: "1rem" }}
@@ -300,6 +302,7 @@ const Login = () => {
                   color="primary"
                   type="submit"
                   sx={{ marginTop: "1rem" }}
+                  disabled={isLoading}
                 >
                   Sign Up
                 </Button>
@@ -311,8 +314,9 @@ const Login = () => {
                 color="secondary"
                 fullWidth
                 onClick={toggleLogin}
+                disabled={isLoading}
               >
-                Login
+                Login Instead
               </Button>
             </>
           )}
