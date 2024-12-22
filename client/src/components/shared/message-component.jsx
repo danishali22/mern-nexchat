@@ -4,16 +4,16 @@ import moment from "moment";
 import { lightBlue } from "../../constants/color";
 import { fileFormat } from "../../lib/features";
 import RenderAttachment from "./render-attachment";
-import {motion} from "framer-motion";
+// import { motion } from "framer-motion";
 
 const MessageComponent = ({ message, user }) => {
   const { sender, content, attachments = [], createdAt } = message;
   const sameSender = String(sender?._id) === String(user._id);
   const timesAgo = moment(createdAt).fromNow();
   return (
-    <motion.div
+    <div
       initial={{ opacity: 0, x: "-100%" }}
-      whileInView={{ opacity: 1, x: 0 }}
+      whileinview={{ opacity: 1, x: 0 }}
       style={{
         alignSelf: sameSender ? "flex-end" : "flex-start",
         backgroundColor: "white",
@@ -48,7 +48,7 @@ const MessageComponent = ({ message, user }) => {
       <Typography variant="caption" color="text.secondary">
         {timesAgo}
       </Typography>
-    </motion.div>
+    </div>
   );
 };
 

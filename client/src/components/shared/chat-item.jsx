@@ -25,10 +25,11 @@ const ChatItem = ({
       to={`/chat/${_id}`}
       onContextMenu={(e) => handleDeleteChat(e, _id, groupChat)}
     >
+      {/* <motion.div */}
       <div
-        initial={{ opacity: 0, y: "-100%" }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 * index }}
+        // initial={{ opacity: 0, y: "-100%" }}
+        // whileinview={{ opacity: 1, y: 0 }}
+        // transition={{ delay: 0.1 * index }}
         style={{
           display: "flex",
           gap: "1rem",

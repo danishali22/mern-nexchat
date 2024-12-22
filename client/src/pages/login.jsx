@@ -62,8 +62,10 @@ const Login = () => {
     }
   };
 
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
+    const toastId = toast.loading("Signing Up...");
+
     const formData = new FormData();
     formData.append("avatar", avatar.file);
     formData.append("name", name.value);
@@ -79,18 +81,22 @@ const Login = () => {
     };
 
     try {
-      const { data } = axios.post(
+      const { data } = await axios.post(
         `${server}/user/new`,
         formData,
         config
       );
-      dispatch(userExists);
-      toast.success(data.message);
-      navigate("/");
+
+      dispatch(userExists(data.user));
+      toast.success(data.message, {
+        id: toastId,
+      });
     } catch (error) {
-      toast.error(error.response.data.message || "Something went wrong");
+      toast.error(error?.response?.data?.message || "Something Went Wrong", {
+        id: toastId,
+      });
     }
-  };
+  }
 
   const name = useInputValidation("");
   const bio = useInputValidation("");
