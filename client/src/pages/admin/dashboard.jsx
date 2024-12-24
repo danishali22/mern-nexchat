@@ -152,6 +152,7 @@ const Dashboard = () => {
 
         {Widgets}
       </Container>
+  )}
     </AdminLayout>
   );
 };
