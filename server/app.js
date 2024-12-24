@@ -11,8 +11,11 @@ import userRoutes from "./routes/user.js";
 import chatRoutes from "./routes/chat.js";
 import adminRoutes from "./routes/admin.js";
 import {
+  CHAT_JOINED,
+  CHAT_LEAVED,
   NEW_MESSAGE,
   NEW_MESSAGE_ALERT,
+  ONLINE_USERS,
   START_TYPING,
   STOP_TYPING,
 } from "./constants/event.js";
@@ -21,6 +24,7 @@ import { Message } from "./models/message.js";
 import cors from "cors";
 import { v2 as cloudinary } from "cloudinary";
 import { socketAuthentication } from "./middlewares/auth.js";
+import { set } from "mongoose";
 
 dotenv.config({
   path: "./.env",
@@ -30,6 +34,7 @@ const port = process.env.PORT || 3000;
 const envMode = process.env.NODE_ENV.trim() || "PRODUCTION";
 const adminSecretKey = process.env.ADMIN_SECRET_KEY || "admin";
 const userSocketIds = new Map();
+const onlineUsers = new Set();
 
 connectDB(mongoUri);
 // createUser(10);  use to create fake users
@@ -82,7 +87,6 @@ io.use((socket, next) => {
 io.on("connection", (socket) => {
   const user = socket.user;
   userSocketIds.set(user._id.toString(), socket.id);
-  console.log("A user connection with socket id", socket.id);
 
   socket.on(NEW_MESSAGE, async ({ chatId, members, message }) => {
     const messageForRealTime = {
@@ -128,9 +132,25 @@ io.on("connection", (socket) => {
     socket.to(membersSocket).emit(STOP_TYPING, {chatId});
   })
 
+  socket.on(CHAT_JOINED, ({userId, members}) => {
+    onlineUsers.add(userId.toString());
+    
+    const membersSocket = getSockets(members);
+    io.to(membersSocket).emit(ONLINE_USERS, Array.from(onlineUsers));
+  });
+
+  socket.on(CHAT_LEAVED , ({userId, members}) => {
+    onlineUsers.delete(userId.toString());
+
+    const membersSocket = getSockets(members);
+    io.to(membersSocket).emit(ONLINE_USERS, Array.from(onlineUsers));
+  });
+
   socket.on("disconnect", () => {
     console.log("A user disconnected with socket id", socket.id);
     userSocketIds.delete(user._id.toString());
+    onlineUsers.delete(user._id.toString());
+    socket.broadcast.emit(ONLINE_USERS, Array.from(onlineUsers));
   });
 });
 
