@@ -46,7 +46,7 @@ import { adminLogout } from "../../redux/thunks/admin";
     },
     {
       name: "Chats",
-      path: "/admin/chats",
+      path: "/admin/cwhats",
       icon: <GroupsIcon />,
     },
     {

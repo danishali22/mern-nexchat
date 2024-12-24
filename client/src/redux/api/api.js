@@ -141,8 +141,15 @@ const api = createApi({
       }),
       invalidatesTags: ["Chat"],
     }),
+    stats: builder.query({
+      query: () => ({
+        url: "admin/stats",
+        credentials: "include",
+      }),
+      keepUnusedDataFor: 0,
+    }),
   }),
 });
 
 export default api;
-export const {useMyChatsQuery, useLazySearchUserQuery, useSendFriendRequestMutation, useGetNotificationsQuery, useAcceptFriendRequestMutation, useChatDetailsQuery, useGetMessagesQuery, useSendAttachmentsMutation, useMyGroupsQuery, useAvailableFriendsQuery, useNewGroupMutation, useRenameGroupMutation, useAddMemberMutation, useRemoveMemberMutation, useDeleteChatMutation, useLeaveGroupMutation } = api
+export const {useMyChatsQuery, useLazySearchUserQuery, useSendFriendRequestMutation, useGetNotificationsQuery, useAcceptFriendRequestMutation, useChatDetailsQuery, useGetMessagesQuery, useSendAttachmentsMutation, useMyGroupsQuery, useAvailableFriendsQuery, useNewGroupMutation, useRenameGroupMutation, useAddMemberMutation, useRemoveMemberMutation, useDeleteChatMutation, useLeaveGroupMutation, useStatsQuery } = api
