@@ -83,7 +83,7 @@ const Dashboard = () => {
     <AdminLayout>
       {
         isLoading ? (
-    <Skeleton />
+    <Skeleton height={"100vh"} />
   ) :(
       <Container component={"main"}>
         {Appbar}

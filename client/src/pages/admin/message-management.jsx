@@ -5,10 +5,9 @@ import { useEffect, useState } from "react";
 import AdminLayout from "../../components/layout/admin-layout";
 import RenderAttachment from "../../components/shared/render-attachment";
 import Table from "../../components/shared/table";
-import { fileFormat, transformImage } from "../../lib/features";
-import { dashboardData } from "../../constants/sample-data";
-import { useAllMessagesQuery } from "../../redux/api/api";
 import { useErrors } from "../../hooks/hook";
+import { fileFormat, transformImage } from "../../lib/features";
+import { useAllMessagesQuery } from "../../redux/api/api";
 
 const columns = [
   {
@@ -114,12 +113,14 @@ const MessageManagement = () => {
 
   return (
     <AdminLayout>
-      {isLoading ? (<Skeleton />): (
+      {isLoading ? (
+        <Skeleton height={"100vh"} />
+      ) : (
         <Table
-        heading={"All Messages"}
-        columns={columns}
-        rows={rows}
-        rowHeight={200}
+          heading={"All Messages"}
+          columns={columns}
+          rows={rows}
+          rowHeight={200}
         />
       )}
     </AdminLayout>
