@@ -1,4 +1,4 @@
-/* eslint-disable react/prop-types */
+import React from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import { Container, Paper, Typography } from "@mui/material";
 import { matBlack } from "../../constants/color";

@@ -1,10 +1,11 @@
-import { Avatar, Stack } from "@mui/material";
+import { Avatar, Skeleton, Stack } from "@mui/material";
 import { useEffect, useState } from "react";
 import AdminLayout from "../../components/layout/admin-layout";
 import AvatarCard from "../../components/shared/avatar-card";
 import Table from "../../components/shared/table";
-import { dashboardData } from "../../constants/sample-data";
 import { transformImage } from "../../lib/features";
+import { useAllChatsQuery } from "../../redux/api/api";
+import { useErrors } from "../../hooks/hook";
 
 const columns = [
   {
@@ -70,27 +71,35 @@ const columns = [
 ];
 
 const ChatManagement = () => {
+  const { data, isLoading, isError, error } = useAllChatsQuery("");
+  
+  const errors = [{ isError, error }];
+  useErrors(errors);
 
   const [rows, setRows] = useState([]);
 
   useEffect(() => {
-      setRows(
-        dashboardData.chats.map((i) => ({
-          ...i,
-          id: i._id,
-          avatar: i.avatar.map((i) => transformImage(i, 50)),
-          members: i.members.map((i) => transformImage(i.avatar, 50)),
-          creator: {
-            name: i.creator.name,
-            avatar: transformImage(i.creator.avatar, 50),
-          },
-        }))
-      );
-  }, []);
+      if(data){
+        setRows(
+          data.chats.map((i) => ({
+            ...i,
+            id: i._id,
+            avatar: i.avatar.map((i) => transformImage(i, 50)),
+            members: i.members.map((i) => transformImage(i.avatar, 50)),
+            creator: {
+              name: i.creator.name,
+              avatar: transformImage(i.creator.avatar, 50),
+            },
+          }))
+        );
+      }
+  }, [data]);
 
   return (
     <AdminLayout>
+      {isLoading ? <Skeleton /> :(
         <Table heading={"All Chats"} columns={columns} rows={rows} />
+      )}
     </AdminLayout>
   );
 };

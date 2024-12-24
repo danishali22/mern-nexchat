@@ -11,6 +11,7 @@ import {
   Box,
   Container,
   Paper,
+  Skeleton,
   Stack,
   Typography,
 } from "@mui/material";
@@ -24,10 +25,8 @@ import {
 import { matBlack } from "../../constants/color";
 import { useStatsQuery } from "../../redux/api/api";
 import { useErrors } from "../../hooks/hook";
-import { LayoutLoader } from "../../components/layout/loader";
 
 const Dashboard = () => {
-
   const { data, isLoading, isError, error } = useStatsQuery("");
   const stats = data?.stats;
 
@@ -80,10 +79,12 @@ const Dashboard = () => {
     </Stack>
   );
 
-  return isLoading ? (
-    <LayoutLoader />
-  ) : (
+  return (
     <AdminLayout>
+      {
+        isLoading ? (
+    <Skeleton />
+  ) :(
       <Container component={"main"}>
         {Appbar}
 

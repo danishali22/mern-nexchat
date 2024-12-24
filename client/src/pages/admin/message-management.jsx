@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-key */
-import { Avatar, Box, Stack } from "@mui/material";
+import { Avatar, Box, Skeleton, Stack } from "@mui/material";
 import moment from "moment";
 import { useEffect, useState } from "react";
 import AdminLayout from "../../components/layout/admin-layout";
@@ -7,6 +7,8 @@ import RenderAttachment from "../../components/shared/render-attachment";
 import Table from "../../components/shared/table";
 import { fileFormat, transformImage } from "../../lib/features";
 import { dashboardData } from "../../constants/sample-data";
+import { useAllMessagesQuery } from "../../redux/api/api";
+import { useErrors } from "../../hooks/hook";
 
 const columns = [
   {
@@ -86,31 +88,40 @@ const columns = [
 ];
 
 const MessageManagement = () => {
+  const { data, isLoading, isError, error } = useAllMessagesQuery("");
+  console.log(data)
+
+  const errors = [{ isError, error }];
+  useErrors(errors);
 
   const [rows, setRows] = useState([]);
 
   useEffect(() => {
-      setRows(
-        dashboardData.messages.map((i) => ({
-          ...i,
-          id: i._id,
-          sender: {
-            name: i.sender.name,
-            avatar: transformImage(i.sender.avatar, 50),
-          },
-          createdAt: moment(i.createdAt).format("MMMM Do YYYY, h:mm:ss a"),
-        }))
-      );
-  }, []);
+      if(data){
+        setRows(
+          data.messages.map((i) => ({
+            ...i,
+            id: i._id,
+            sender: {
+              name: i.sender.name,
+              avatar: transformImage(i.sender.avatar, 50),
+            },
+            createdAt: moment(i.createdAt).format("MMMM Do YYYY, h:mm:ss a"),
+          }))
+        );
+      }
+  }, [data]);
 
   return (
     <AdminLayout>
-    <Table
-          heading={"All Messages"}
-          columns={columns}
-          rows={rows}
-          rowHeight={200}
+      {isLoading ? (<Skeleton />): (
+        <Table
+        heading={"All Messages"}
+        columns={columns}
+        rows={rows}
+        rowHeight={200}
         />
+      )}
     </AdminLayout>
   );
 };

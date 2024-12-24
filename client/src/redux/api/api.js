@@ -148,8 +148,29 @@ const api = createApi({
       }),
       keepUnusedDataFor: 0,
     }),
+    allUsers: builder.query({
+      query: () => ({
+        url: "admin/users",
+        credentials: "include",
+      }),
+      keepUnusedDataFor: 0,
+    }),
+    allChats: builder.query({
+      query: () => ({
+        url: "admin/chats",
+        credentials: "include",
+      }),
+      keepUnusedDataFor: 0,
+    }),
+    allMessages: builder.query({
+      query: () => ({
+        url: "admin/messages",
+        credentials: "include",
+      }),
+      keepUnusedDataFor: 0,
+    }),
   }),
 });
 
 export default api;
-export const {useMyChatsQuery, useLazySearchUserQuery, useSendFriendRequestMutation, useGetNotificationsQuery, useAcceptFriendRequestMutation, useChatDetailsQuery, useGetMessagesQuery, useSendAttachmentsMutation, useMyGroupsQuery, useAvailableFriendsQuery, useNewGroupMutation, useRenameGroupMutation, useAddMemberMutation, useRemoveMemberMutation, useDeleteChatMutation, useLeaveGroupMutation, useStatsQuery } = api
+export const {useMyChatsQuery, useLazySearchUserQuery, useSendFriendRequestMutation, useGetNotificationsQuery, useAcceptFriendRequestMutation, useChatDetailsQuery, useGetMessagesQuery, useSendAttachmentsMutation, useMyGroupsQuery, useAvailableFriendsQuery, useNewGroupMutation, useRenameGroupMutation, useAddMemberMutation, useRemoveMemberMutation, useDeleteChatMutation, useLeaveGroupMutation, useStatsQuery, useAllUsersQuery, useAllChatsQuery, useAllMessagesQuery } = api
