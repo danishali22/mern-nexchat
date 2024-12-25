@@ -65,6 +65,8 @@ const UserManagement = () => {
             ...i,
             id: i._id,
             avatar: transformImage(i.avatar, 50),
+            friends: i.friendChats,
+            groups: i.groupChats,
           }))
         );
       }

@@ -24,7 +24,6 @@ import { Message } from "./models/message.js";
 import cors from "cors";
 import { v2 as cloudinary } from "cloudinary";
 import { socketAuthentication } from "./middlewares/auth.js";
-import { set } from "mongoose";
 
 dotenv.config({
   path: "./.env",
@@ -90,7 +89,6 @@ io.on("connection", (socket) => {
   console.log(`User connected: ${user._id}`);
 
   socket.on(NEW_MESSAGE, async ({ chatId, members, message }) => {
-    console.log("NEW_MESSAGE", message);
     const messageForRealTime = {
       content: message,
       id: uuid(),

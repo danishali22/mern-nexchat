@@ -1,7 +1,7 @@
 export const server = import.meta.env.VITE_SERVER;
 
+// socket real time chat issue
 // refetch chats when adding or remove member
-// delete group
 // msg delete and delete for everone
 // profile edit
 // google auth
