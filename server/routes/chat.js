@@ -12,6 +12,7 @@ import {
   renameGroup,
   deleteChat,
   getMessages,
+  getAiResult,
 } from "../controllers/chat.js";
 import { attachmentsMulter } from "../middlewares/multer.js";
 import {
@@ -48,6 +49,8 @@ app.post(
   sendAttachments
 );
 app.get("/message/:id", chatIdValidator(), validateHandler, getMessages);
+
+app.get("/ai", getAiResult);
 
 app
   .route("/:id")

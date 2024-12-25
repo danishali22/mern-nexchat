@@ -12,6 +12,7 @@ import {
 } from "../constants/event.js";
 import { getOtherMember } from "../lib/helper.js";
 import { User } from "../models/user.js";
+import { generateResult } from "../utils/ai.js";
 
 const newGroupChat = TryCatch(async (req, res, next) => {
   const { name, members } = req.body;
@@ -396,6 +397,12 @@ const getMessages = TryCatch(async (req, res, next) => {
   });
 });
 
+const getAiResult = TryCatch(async (req, res) => {
+  const { prompt } = req.query;
+  const result = await generateResult(prompt);
+  return res.send(result);
+});
+
 export {
   newGroupChat,
   getMyChats,
@@ -407,5 +414,6 @@ export {
   getChatDetails,
   renameGroup,
   deleteChat,
-  getMessages
+  getMessages,
+  getAiResult
 };

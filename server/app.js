@@ -44,6 +44,7 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
+const google_api_key = process.env.GOOGLE_API_KEY;
 const app = express();
 const server = createServer(app);
 const io = new Server(server, {
@@ -160,4 +161,4 @@ server.listen(port, () => {
   console.log(`Server is running on port ${port} in ${envMode} Mode`);
 });
 
-export { adminSecretKey, envMode, userSocketIds };
+export { adminSecretKey, envMode, userSocketIds, google_api_key };

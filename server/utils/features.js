@@ -3,7 +3,6 @@ import mongoose from "mongoose"
 import { v4 as uuid } from "uuid";
 import { v2 as cloudinary } from "cloudinary";
 import { getBase64, getSockets } from "../lib/helper.js";
-import { User } from "../models/user.js";
 
 const cookieOptions = {
     maxAge: 15 * 24 * 60 * 60 * 1000,
