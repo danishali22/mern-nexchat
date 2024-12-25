@@ -7,4 +7,3 @@ export const server = import.meta.env.VITE_SERVER;
 // google auth
 // set admin to any group member
 // show group chat in all messages - admin panel
-// show friends and other field in all users - admin panel

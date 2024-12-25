@@ -50,7 +50,6 @@ const columns = [
 ];
 const UserManagement = () => {
   const { data, isLoading, isError, error } = useAllUsersQuery("");
-  console.log(data?.users);
 
   const errors = [{ isError, error }];
 

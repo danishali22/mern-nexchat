@@ -88,7 +88,6 @@ const columns = [
 
 const MessageManagement = () => {
   const { data, isLoading, isError, error } = useAllMessagesQuery("");
-  console.log(data)
 
   const errors = [{ isError, error }];
   useErrors(errors);
@@ -96,19 +95,19 @@ const MessageManagement = () => {
   const [rows, setRows] = useState([]);
 
   useEffect(() => {
-      if(data){
-        setRows(
-          data.messages.map((i) => ({
-            ...i,
-            id: i._id,
-            sender: {
-              name: i.sender.name,
-              avatar: transformImage(i.sender.avatar, 50),
-            },
-            createdAt: moment(i.createdAt).format("MMMM Do YYYY, h:mm:ss a"),
-          }))
-        );
-      }
+    if (data) {
+      setRows(
+        data.messages.map((i) => ({
+          ...i,
+          id: i._id,
+          sender: {
+            name: i.sender.name,
+            avatar: transformImage(i.sender.avatar, 50),
+          },
+          createdAt: moment(i.createdAt).format("MMMM Do YYYY, h:mm:ss a"),
+        }))
+      );
+    }
   }, [data]);
 
   return (

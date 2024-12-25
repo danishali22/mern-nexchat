@@ -12,8 +12,8 @@ const MessageComponent = ({ message, user }) => {
   const timesAgo = moment(createdAt).fromNow();
   return (
     <div
-      initial={{ opacity: 0, x: "-100%" }}
-      whileinview={{ opacity: 1, x: 0 }}
+      // initial={{ opacity: 0, x: "-100%" }}
+      // whileinview={{ opacity: 1, x: 0 }}
       style={{
         alignSelf: sameSender ? "flex-end" : "flex-start",
         backgroundColor: "white",
