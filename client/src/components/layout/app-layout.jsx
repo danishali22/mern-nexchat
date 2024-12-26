@@ -19,6 +19,7 @@ import {
 } from "../../redux/reducers/chat";
 import { getOrSaveFromStorage } from "../../lib/features";
 import DeleteChatMenu from "../dialog/delete-chat-menu";
+import toast from "react-hot-toast";
 
 /* eslint-disable react/display-name */
 const AppLayout = () => (WrappedComponent) => {
@@ -50,6 +51,9 @@ const AppLayout = () => (WrappedComponent) => {
     }, [newMessagesAlert]);
 
     const handleDeleteChat = (e, chatId, groupChat) => {
+      if (chatId === "ai") {
+        return;
+      }
       dispatch(setIsDeleteMenu(true));
       dispatch(setSelectedDeleteChat({ chatId, groupChat }));
       deleteMenuAnchor.current = e.currentTarget;

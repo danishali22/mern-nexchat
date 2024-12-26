@@ -20,7 +20,6 @@ import { server } from "./constants/config.js";
 import { useDispatch } from "react-redux";
 import { userExists } from "../redux/reducers/auth";
 import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [isLogin, setIsLogin] = useState(true);

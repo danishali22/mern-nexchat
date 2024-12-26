@@ -403,6 +403,21 @@ const getAiResult = TryCatch(async (req, res) => {
   return res.send(result);
 });
 
+const isAiChat = TryCatch(async (req, res, next) => {
+  const { chatId } = req.params;
+
+  const chat = await Chat.findById(chatId);
+
+  if (!chat) {
+    return next(new ErrorHandler("Chat not found", 404));
+  }
+
+  return res.status(200).json({
+    success: true,
+    isAiChat: chat.aiChat || false,
+  });
+});
+
 export {
   newGroupChat,
   getMyChats,
@@ -415,5 +430,6 @@ export {
   renameGroup,
   deleteChat,
   getMessages,
-  getAiResult
+  getAiResult,
+  isAiChat,
 };

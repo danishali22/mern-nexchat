@@ -21,23 +21,35 @@ import { useDispatch } from "react-redux";
 import { removeNewMessagesAlert } from "../redux/reducers/chat";
 import { TypingLoader } from "../components/layout/loader";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { server } from "../constants/config";
 
 const Chat = ({ chatId, user }) => {
   const containerRef = useRef(null);
   const bottomRef = useRef(null);
+  const typingTimeOut = useRef(null);
+
   const socket = getSocket();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const ai_id = "676c53d3f33f4b8f7326edae";
+  const ai_name = "AI";
 
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const [page, setPage] = useState(1);
   const [fileMenuAnchor, setFileMenuAnchor] = useState(null);
-
   const [IamTyping, setIamTyping] = useState(null);
   const [userTyping, setUserTyping] = useState(null);
-  const typingTimeOut = useRef(null);
+  const [isAiChat, setIsAiChat] = useState(null);
 
+  const config = {
+    withCredentials: true,
+    headers: {
+      "Content-Type": "application/json",
+    },
+  };
+  
   const chatDetails = useChatDetailsQuery({ chatId, skip: !chatId });
 
   const oldMessagesChunk = useGetMessagesQuery({ chatId, page });
@@ -57,6 +69,20 @@ const Chat = ({ chatId, user }) => {
 
   const members = chatDetails?.data?.chat?.members;
 
+  useEffect(() => {
+    const fetchChatType = async () => {
+      try {
+        const { data } = await axios.get(`${server}/chat/${chatId}/is-ai`, config);
+        setIsAiChat(data.isAiChat);
+      } catch (error) {
+        console.error("Error fetching chat type:", error);
+        setIsAiChat(false);
+      }
+    };
+
+    fetchChatType();
+  }, [chatId]);
+
   const messageOnChange = (e) => {
     setMessage(e.target.value);
     if(!IamTyping){
@@ -72,13 +98,45 @@ const Chat = ({ chatId, user }) => {
     }, [1000])
   }
 
-  const submitHandler = (e) => {
+  const submitHandler = async (e) => {
     e.preventDefault();
 
     if (!message.trim()) return;
 
-    // Emitting the message to the server
-    socket.emit(NEW_MESSAGE, { chatId, members, message });
+    try {
+        if (isAiChat) {
+          const { data: aiResponse } = await axios.get(`${server}/chat/ai`, {
+            params: { prompt: message },
+            withCredentials: true,
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+
+          const aiMessage = {
+            content: aiResponse,
+            sender: {
+              _id: ai_id,
+              name: ai_name,
+            },
+            chat: chatId,
+            createdAt: new Date().toISOString(),
+          };
+
+          socket.emit(NEW_MESSAGE, { chatId, members, message });
+
+          socket.emit(NEW_MESSAGE, {
+            chatId,
+            members,
+            message: aiMessage.content,
+          });
+        } else {
+        socket.emit(NEW_MESSAGE, { chatId, members, message });
+      }
+    } catch (error) {
+      console.error("Error handling message submission:", error);
+    }
+
     setMessage("");
   };
 

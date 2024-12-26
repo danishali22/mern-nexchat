@@ -10,6 +10,10 @@ const schema = new Schema(
       type: Boolean,
       default: false,
     },
+    aiChat: {
+      type: Boolean,
+      default: false,
+    },
     creator: {
       type: Types.ObjectId,
       ref: "User",

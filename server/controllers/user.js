@@ -16,6 +16,10 @@ import { getOtherMember } from "../lib/helper.js";
 const newUser = TryCatch(async (req, res, next) => {
   const { name, username, password, bio } = req.body;
 
+  if(username === "ai"){
+    return next(new ErrorHandler("You can't set this username.", 400));
+  }
+
   const file = req.file;
 
   if (!file) return next(new ErrorHandler("Please Upload Avatar"));
@@ -35,7 +39,15 @@ const newUser = TryCatch(async (req, res, next) => {
     avatar,
   });
 
-  sendToken(res, user, 201, "User created");
+  const ai_id = "676c53d3f33f4b8f7326edae";
+  const ai_name = "AI";
+  const members = [user._id, ai_id];
+  Chat.create({
+    members,
+    aiChat: true,
+    name: `${user.name}-${ai_name}`,
+  }),
+    sendToken(res, user, 201, "User created");
 });
 
 const login = TryCatch(async (req, res, next) => {

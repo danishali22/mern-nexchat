@@ -13,6 +13,7 @@ import {
   deleteChat,
   getMessages,
   getAiResult,
+  isAiChat,
 } from "../controllers/chat.js";
 import { attachmentsMulter } from "../middlewares/multer.js";
 import {
@@ -50,6 +51,7 @@ app.post(
 );
 app.get("/message/:id", chatIdValidator(), validateHandler, getMessages);
 
+app.get("/:chatId/is-ai", isAiChat);
 app.get("/ai", getAiResult);
 
 app
