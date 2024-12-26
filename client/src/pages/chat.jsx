@@ -103,6 +103,16 @@ const Chat = ({ chatId, user }) => {
 
     if (!message.trim()) return;
 
+    const userMessage = {
+      content: message,
+      sender: {
+        _id: user._id,
+        name: user.name,
+      },
+      chat: chatId,
+      createdAt: new Date().toISOString(),
+    };
+
     try {
         if (isAiChat) {
           const { data: aiResponse } = await axios.get(`${server}/chat/ai`, {
@@ -123,20 +133,23 @@ const Chat = ({ chatId, user }) => {
             createdAt: new Date().toISOString(),
           };
 
-          const userMessage = {
-            content: message,
-            sender: user,
-            chat: chatId,
-            createdAt: new Date().toISOString(),
-          };
+          socket.emit(NEW_MESSAGE, { chatId, members, sender: userMessage.sender, message: userMessage.content });
 
-          socket.emit(NEW_MESSAGE, { chatId, members, message: userMessage.content });
-
-          socket.emit(NEW_MESSAGE, { chatId, members, message: aiMessage.content });
+          socket.emit(NEW_MESSAGE, {
+            chatId,
+            members,
+            sender: aiMessage.sender,
+            message: aiMessage.content,
+          });
 
           setMessages((prev) => [...prev, userMessage, aiMessage]);
         } else {
-        socket.emit(NEW_MESSAGE, { chatId, members, message });
+        socket.emit(NEW_MESSAGE, {
+          chatId,
+          members,
+          sender: userMessage.sender,
+          message,
+        });
       }
     } catch (error) {
       console.error("Error handling message submission:", error);

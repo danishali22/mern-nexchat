@@ -89,13 +89,13 @@ io.on("connection", (socket) => {
   userSocketIds.set(user._id.toString(), socket.id);
   console.log(`User connected: ${user._id}`);
 
-  socket.on(NEW_MESSAGE, async ({ chatId, members, message }) => {
+  socket.on(NEW_MESSAGE, async ({ chatId, members, sender, message }) => {
     const messageForRealTime = {
       content: message,
       id: uuid(),
       sender: {
-        _id: user._id,
-        name: user.name,
+        _id: sender._id,
+        name: sender.name,
       },
       chat: chatId,
       createdAt: new Date().toISOString(),
@@ -103,7 +103,7 @@ io.on("connection", (socket) => {
 
     const messageForDB = {
       content: message,
-      sender: user._id,
+      sender: sender._id,
       chat: chatId,
     };
 
