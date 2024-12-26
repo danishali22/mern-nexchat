@@ -123,13 +123,18 @@ const Chat = ({ chatId, user }) => {
             createdAt: new Date().toISOString(),
           };
 
-          socket.emit(NEW_MESSAGE, { chatId, members, message });
+          const userMessage = {
+            content: message,
+            sender: user,
+            chat: chatId,
+            createdAt: new Date().toISOString(),
+          };
 
-          socket.emit(NEW_MESSAGE, {
-            chatId,
-            members,
-            message: aiMessage.content,
-          });
+          socket.emit(NEW_MESSAGE, { chatId, members, message: userMessage.content });
+
+          socket.emit(NEW_MESSAGE, { chatId, members, message: aiMessage.content });
+
+          setMessages((prev) => [...prev, userMessage, aiMessage]);
         } else {
         socket.emit(NEW_MESSAGE, { chatId, members, message });
       }

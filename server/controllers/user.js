@@ -206,20 +206,23 @@ const getMyNotifications = TryCatch(async (req, res, next) => {
 
 const getMyFriends = TryCatch(async (req, res, next) => {
   const chatId = req.query.chatId;
+  const ai_id = "676c53d3f33f4b8f7326edae";
 
   const myChats = await Chat.find({
     members: req.user,
     groupChat: false,
   }).populate("members", "name avatar");
 
-  const friends = myChats.map(({ members }) => {
-    const otherUser = getOtherMember(members, req.user);
-    return {
-      _id: otherUser._id,
-      name: otherUser.name,
-      avatar: otherUser.avatar.url,
-    };
-  });
+  const friends = myChats
+    .map(({ members }) => {
+      const otherUser = getOtherMember(members, req.user);
+      return {
+        _id: otherUser._id,
+        name: otherUser.name,
+        avatar: otherUser.avatar.url,
+      };
+    })
+    .filter((friend) => friend._id.toString() !== ai_id);
 
   if (chatId) {
     const chat = await Chat.findById(chatId);
